@@ -1,0 +1,262 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  picture   String
+  email     String   @unique
+  firstName String
+  lastName  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  comments             Comment[]
+  eventDonations       EventDonation[]
+  notifications        Notification[]
+  publicationClaps     PublicationClap[]
+  ventures             Venture[]
+  ventureSponsorships  VentureSponsorship[]
+  ventureSubscriptions VentureSubscription[]
+  roles                Role[]                @relation("XUserRoles")
+
+  XUserRoles XUserRoles[]
+}
+
+model Comment {
+  id                 String             @id @default(cuid())
+  userId             String
+  publicationId      String
+  body               String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
+  VenturePublication VenturePublication @relation(fields: [publicationId], references: [id])
+  User               User               @relation(fields: [userId], references: [id])
+}
+
+model EventCategory {
+  id             String           @id @default(cuid())
+  name           String           @unique
+  slug           String           @unique
+  description    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+  XEventCategory XEventCategory[]
+  VentureEvent   VentureEvent[]   @relation("XEventCategory")
+}
+
+model EventDonation {
+  id           String       @id @default(cuid())
+  userId       String
+  eventId      String
+  amount       Float
+  currency     String
+  createdAt    DateTime     @default(now())
+  VentureEvent VentureEvent @relation(fields: [eventId], references: [id])
+  User         User         @relation(fields: [userId], references: [id])
+}
+
+model Location {
+  id             String       @id @default(cuid())
+  ventureEventId String
+  lat            Float?
+  lng            Float?
+  description    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now())
+  VentureEvent   VentureEvent @relation(fields: [ventureEventId], references: [id])
+}
+
+model Notification {
+  id          String             @id @default(cuid())
+  title       String
+  userId      String
+  type        NotificationType
+  status      NotificationStatus
+  description String
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @default(now())
+  user        User               @relation(fields: [userId], references: [id])
+}
+
+model PublicationClap {
+  id                 String             @id
+  userId             String
+  publicationId      String
+  createdAt          DateTime           @default(now())
+  VenturePublication VenturePublication @relation(fields: [publicationId], references: [id])
+  User               User               @relation(fields: [userId], references: [id])
+}
+
+model PublicationContent {
+  id                 String             @id
+  type               ContentType
+  content            String
+  publicationId      String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @default(now())
+  VenturePublication VenturePublication @relation(fields: [publicationId], references: [id])
+}
+
+model Role {
+  id        String   @id
+  name      AppRole  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  users     User[]   @relation("XUserRoles")
+
+  XUserRoles XUserRoles[]
+}
+
+model Venture {
+  id              String            @id
+  name            String
+  slug            String            @unique
+  coverPhoto      String
+  description     String
+  ownerId         String
+  active          Boolean           @default(true)
+  verified        Boolean           @default(false)
+  detailId        String            @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @default(now())
+  VentureDetail   VentureDetail     @relation(fields: [detailId], references: [id])
+  User            User              @relation(fields: [ownerId], references: [id])
+  VentureCategory VentureCategory[] @relation("VentureCategory")
+}
+
+model VentureCategory {
+  id          String    @id
+  name        String
+  slug        String    @unique
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  Venture     Venture[] @relation("VentureCategory")
+}
+
+model VentureDetail {
+  id                  String                @id
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @default(now())
+  Venture             Venture?
+  VentureEvent        VentureEvent[]
+  VenturePublication  VenturePublication[]
+  VentureSponsorship  VentureSponsorship[]
+  VentureSubscription VentureSubscription[]
+}
+
+model VentureEvent {
+  id             String           @id
+  title          String
+  description    String
+  coverPhoto     String
+  ventureId      String
+  startDate      DateTime
+  endDate        DateTime
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now())
+  EventDonation  EventDonation[]
+  Location       Location[]
+  VentureDetail  VentureDetail    @relation(fields: [ventureId], references: [id])
+  XEventCategory XEventCategory[]
+  EventCategory  EventCategory[]  @relation("XEventCategory")
+}
+
+model VenturePublication {
+  id                 String               @id
+  description        String
+  ventureDetailId    String
+  type               PublicationType
+  clapsCount         Int
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @default(now())
+  Comment            Comment[]
+  PublicationClap    PublicationClap[]
+  PublicationContent PublicationContent[]
+  VentureDetail      VentureDetail        @relation(fields: [ventureDetailId], references: [id])
+}
+
+model VentureSponsorship {
+  id              String        @id
+  sponsorId       String
+  ventureDetailId String
+  monthlyAmount   Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @default(now())
+  User            User          @relation(fields: [sponsorId], references: [id])
+  VentureDetail   VentureDetail @relation(fields: [ventureDetailId], references: [id])
+}
+
+model VentureSubscription {
+  id            String        @id
+  subscriberId  String
+  ventureId     String
+  createdAt     DateTime      @default(now())
+  User          User          @relation(fields: [subscriberId], references: [id])
+  VentureDetail VentureDetail @relation(fields: [ventureId], references: [id])
+}
+
+model XEventCategory {
+  eventId       String
+  categoryId    String
+  EventCategory EventCategory @relation(fields: [categoryId], references: [id])
+  VentureEvent  VentureEvent  @relation(fields: [eventId], references: [id])
+
+  @@id([eventId, categoryId])
+}
+
+model XUserRoles {
+  id        String   @id
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  Role      Role     @relation(fields: [roleId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+enum AppRole {
+  ADMIN
+  USER
+  MODERATOR
+  NEWS_WRITER
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  ANNOUNCEMENT
+  ACHIEVEMENT
+}
+
+enum NotificationStatus {
+  READ
+  UNREAD
+}
+
+enum NotificationType {
+  WELCOME
+  ACCOUNT_VERIFIED
+  ACCOUNT_LOCKED
+  ACCOUNT_UNLOCKED
+  NEW_FOLLOWER
+  NEW_COMMENT
+  NEW_SPONSOR
+  NEW_DONATION
+}
+
+enum PublicationType {
+  TEXTUAL
+  VIDEO
+  IMAGE
+  ANNOUNCEMENT
+  ACHIEVEMENT
+}
