@@ -127,7 +127,8 @@ exports.Prisma.UserScalarFieldEnum = {
   lastName: 'lastName',
   active: 'active',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  onboardingCompleted: 'onboardingCompleted'
 };
 
 exports.Prisma.CommentScalarFieldEnum = {
@@ -197,6 +198,7 @@ exports.Prisma.PublicationContentScalarFieldEnum = {
 exports.Prisma.RoleScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  label: 'label',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

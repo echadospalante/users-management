@@ -10,6 +10,7 @@ import { AppRole, ComplexInclude, Pagination, User } from 'x-ventures-domain';
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { UsersRepository } from '../gateway/database/users.repository';
+import { RolesRepository } from '../gateway/database/roles.repository';
 
 // export class LoginResponse {
 //   firstName: string;
@@ -28,6 +29,8 @@ export class UsersService {
   public constructor(
     @Inject(UsersRepository)
     private usersRepository: UsersRepository,
+    @Inject(RolesRepository)
+    private rolesRepository: RolesRepository,
     @Inject(UserAMQPProducer)
     private userAMQPProducer: UserAMQPProducer,
   ) {}
@@ -48,7 +51,7 @@ export class UsersService {
     const userDB = await this.usersRepository.findByEmail(user.email, {
       comments: false,
       notifications: false,
-      roles: false,
+      roles: true,
       ventures: false,
     });
 
@@ -66,16 +69,22 @@ export class UsersService {
         comments: userDB.comments,
         notifications: userDB.notifications,
         ventures: userDB.ventures,
+        onboardingCompleted: userDB.onboardingCompleted,
       };
     }
+
+    const userRole = await this.rolesRepository.findByName(AppRole.USER);
+    if (!userRole)
+      return Promise.reject(new BadRequestException('Role not found'));
 
     const userToSave: User = {
       ...user,
       active: true,
+      onboardingCompleted: false,
       id: crypto.randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      roles: [],
+      roles: [userRole],
       notifications: [],
       ventures: [],
       comments: [],

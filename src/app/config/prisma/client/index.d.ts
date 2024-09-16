@@ -2847,6 +2847,7 @@ export namespace Prisma {
     active: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    onboardingCompleted: boolean | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -2858,6 +2859,7 @@ export namespace Prisma {
     active: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
+    onboardingCompleted: boolean | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -2869,6 +2871,7 @@ export namespace Prisma {
     active: number
     createdAt: number
     updatedAt: number
+    onboardingCompleted: number
     _all: number
   }
 
@@ -2882,6 +2885,7 @@ export namespace Prisma {
     active?: true
     createdAt?: true
     updatedAt?: true
+    onboardingCompleted?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2893,6 +2897,7 @@ export namespace Prisma {
     active?: true
     createdAt?: true
     updatedAt?: true
+    onboardingCompleted?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2904,6 +2909,7 @@ export namespace Prisma {
     active?: true
     createdAt?: true
     updatedAt?: true
+    onboardingCompleted?: true
     _all?: true
   }
 
@@ -2988,6 +2994,7 @@ export namespace Prisma {
     active: boolean
     createdAt: Date
     updatedAt: Date
+    onboardingCompleted: boolean
     _count: UserCountAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
@@ -3016,6 +3023,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    onboardingCompleted?: boolean
     comments?: boolean | User$commentsArgs<ExtArgs>
     eventDonations?: boolean | User$eventDonationsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
@@ -3037,6 +3045,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    onboardingCompleted?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -3048,6 +3057,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    onboardingCompleted?: boolean
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3086,6 +3096,7 @@ export namespace Prisma {
       active: boolean
       createdAt: Date
       updatedAt: Date
+      onboardingCompleted: boolean
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -3496,6 +3507,7 @@ export namespace Prisma {
     readonly active: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly onboardingCompleted: FieldRef<"User", 'Boolean'>
   }
     
 
@@ -10773,6 +10785,7 @@ export namespace Prisma {
   export type RoleMinAggregateOutputType = {
     id: string | null
     name: $Enums.AppRole | null
+    label: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10780,6 +10793,7 @@ export namespace Prisma {
   export type RoleMaxAggregateOutputType = {
     id: string | null
     name: $Enums.AppRole | null
+    label: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10787,6 +10801,7 @@ export namespace Prisma {
   export type RoleCountAggregateOutputType = {
     id: number
     name: number
+    label: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -10796,6 +10811,7 @@ export namespace Prisma {
   export type RoleMinAggregateInputType = {
     id?: true
     name?: true
+    label?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10803,6 +10819,7 @@ export namespace Prisma {
   export type RoleMaxAggregateInputType = {
     id?: true
     name?: true
+    label?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10810,6 +10827,7 @@ export namespace Prisma {
   export type RoleCountAggregateInputType = {
     id?: true
     name?: true
+    label?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10890,6 +10908,7 @@ export namespace Prisma {
   export type RoleGroupByOutputType = {
     id: string
     name: $Enums.AppRole
+    label: string
     createdAt: Date
     updatedAt: Date
     _count: RoleCountAggregateOutputType | null
@@ -10914,6 +10933,7 @@ export namespace Prisma {
   export type RoleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    label?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     users?: boolean | Role$usersArgs<ExtArgs>
@@ -10924,6 +10944,7 @@ export namespace Prisma {
   export type RoleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    label?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["role"]>
@@ -10931,6 +10952,7 @@ export namespace Prisma {
   export type RoleSelectScalar = {
     id?: boolean
     name?: boolean
+    label?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -10951,6 +10973,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: $Enums.AppRole
+      label: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["role"]>
@@ -11350,6 +11373,7 @@ export namespace Prisma {
   interface RoleFieldRefs {
     readonly id: FieldRef<"Role", 'String'>
     readonly name: FieldRef<"Role", 'AppRole'>
+    readonly label: FieldRef<"Role", 'String'>
     readonly createdAt: FieldRef<"Role", 'DateTime'>
     readonly updatedAt: FieldRef<"Role", 'DateTime'>
   }
@@ -20640,7 +20664,8 @@ export namespace Prisma {
     lastName: 'lastName',
     active: 'active',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    onboardingCompleted: 'onboardingCompleted'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -20734,6 +20759,7 @@ export namespace Prisma {
   export const RoleScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    label: 'label',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -21024,6 +21050,7 @@ export namespace Prisma {
     active?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    onboardingCompleted?: BoolFilter<"User"> | boolean
     comments?: CommentListRelationFilter
     eventDonations?: EventDonationListRelationFilter
     notifications?: NotificationListRelationFilter
@@ -21044,6 +21071,7 @@ export namespace Prisma {
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    onboardingCompleted?: SortOrder
     comments?: CommentOrderByRelationAggregateInput
     eventDonations?: EventDonationOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
@@ -21067,6 +21095,7 @@ export namespace Prisma {
     active?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    onboardingCompleted?: BoolFilter<"User"> | boolean
     comments?: CommentListRelationFilter
     eventDonations?: EventDonationListRelationFilter
     notifications?: NotificationListRelationFilter
@@ -21087,6 +21116,7 @@ export namespace Prisma {
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    onboardingCompleted?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
@@ -21104,6 +21134,7 @@ export namespace Prisma {
     active?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    onboardingCompleted?: BoolWithAggregatesFilter<"User"> | boolean
   }
 
   export type CommentWhereInput = {
@@ -21553,6 +21584,7 @@ export namespace Prisma {
     NOT?: RoleWhereInput | RoleWhereInput[]
     id?: StringFilter<"Role"> | string
     name?: EnumAppRoleFilter<"Role"> | $Enums.AppRole
+    label?: StringFilter<"Role"> | string
     createdAt?: DateTimeFilter<"Role"> | Date | string
     updatedAt?: DateTimeFilter<"Role"> | Date | string
     users?: UserListRelationFilter
@@ -21562,6 +21594,7 @@ export namespace Prisma {
   export type RoleOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    label?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
@@ -21574,6 +21607,7 @@ export namespace Prisma {
     AND?: RoleWhereInput | RoleWhereInput[]
     OR?: RoleWhereInput[]
     NOT?: RoleWhereInput | RoleWhereInput[]
+    label?: StringFilter<"Role"> | string
     createdAt?: DateTimeFilter<"Role"> | Date | string
     updatedAt?: DateTimeFilter<"Role"> | Date | string
     users?: UserListRelationFilter
@@ -21583,6 +21617,7 @@ export namespace Prisma {
   export type RoleOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    label?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: RoleCountOrderByAggregateInput
@@ -21596,6 +21631,7 @@ export namespace Prisma {
     NOT?: RoleScalarWhereWithAggregatesInput | RoleScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Role"> | string
     name?: EnumAppRoleWithAggregatesFilter<"Role"> | $Enums.AppRole
+    label?: StringWithAggregatesFilter<"Role"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Role"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Role"> | Date | string
   }
@@ -22195,6 +22231,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -22215,6 +22252,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -22235,6 +22273,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -22255,6 +22294,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -22275,6 +22315,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
   }
 
   export type UserUpdateManyMutationInput = {
@@ -22286,6 +22327,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -22297,6 +22339,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type CommentCreateInput = {
@@ -22749,6 +22792,7 @@ export namespace Prisma {
   export type RoleCreateInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutRolesInput
@@ -22758,6 +22802,7 @@ export namespace Prisma {
   export type RoleUncheckedCreateInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutRolesInput
@@ -22767,6 +22812,7 @@ export namespace Prisma {
   export type RoleUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutRolesNestedInput
@@ -22776,6 +22822,7 @@ export namespace Prisma {
   export type RoleUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutRolesNestedInput
@@ -22785,6 +22832,7 @@ export namespace Prisma {
   export type RoleCreateManyInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22792,6 +22840,7 @@ export namespace Prisma {
   export type RoleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22799,6 +22848,7 @@ export namespace Prisma {
   export type RoleUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23531,6 +23581,7 @@ export namespace Prisma {
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    onboardingCompleted?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -23542,6 +23593,7 @@ export namespace Prisma {
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    onboardingCompleted?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -23553,6 +23605,7 @@ export namespace Prisma {
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    onboardingCompleted?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -24003,6 +24056,7 @@ export namespace Prisma {
   export type RoleCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    label?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24010,6 +24064,7 @@ export namespace Prisma {
   export type RoleMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    label?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24017,6 +24072,7 @@ export namespace Prisma {
   export type RoleMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    label?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26327,6 +26383,7 @@ export namespace Prisma {
   export type RoleCreateWithoutUsersInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     XUserRoles?: XUserRolesCreateNestedManyWithoutRoleInput
@@ -26335,6 +26392,7 @@ export namespace Prisma {
   export type RoleUncheckedCreateWithoutUsersInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     XUserRoles?: XUserRolesUncheckedCreateNestedManyWithoutRoleInput
@@ -26588,6 +26646,7 @@ export namespace Prisma {
     NOT?: RoleScalarWhereInput | RoleScalarWhereInput[]
     id?: StringFilter<"Role"> | string
     name?: EnumAppRoleFilter<"Role"> | $Enums.AppRole
+    label?: StringFilter<"Role"> | string
     createdAt?: DateTimeFilter<"Role"> | Date | string
     updatedAt?: DateTimeFilter<"Role"> | Date | string
   }
@@ -26656,6 +26715,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     publicationClaps?: PublicationClapCreateNestedManyWithoutUserInput
@@ -26675,6 +26735,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     publicationClaps?: PublicationClapUncheckedCreateNestedManyWithoutUserInput
@@ -26745,6 +26806,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     publicationClaps?: PublicationClapUpdateManyWithoutUserNestedInput
@@ -26764,6 +26826,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     publicationClaps?: PublicationClapUncheckedUpdateManyWithoutUserNestedInput
@@ -26926,6 +26989,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     publicationClaps?: PublicationClapCreateNestedManyWithoutUserInput
@@ -26945,6 +27009,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     publicationClaps?: PublicationClapUncheckedCreateNestedManyWithoutUserInput
@@ -27021,6 +27086,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     publicationClaps?: PublicationClapUpdateManyWithoutUserNestedInput
@@ -27040,6 +27106,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     publicationClaps?: PublicationClapUncheckedUpdateManyWithoutUserNestedInput
@@ -27135,6 +27202,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     publicationClaps?: PublicationClapCreateNestedManyWithoutUserInput
@@ -27154,6 +27222,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     publicationClaps?: PublicationClapUncheckedCreateNestedManyWithoutUserInput
@@ -27189,6 +27258,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     publicationClaps?: PublicationClapUpdateManyWithoutUserNestedInput
@@ -27208,6 +27278,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     publicationClaps?: PublicationClapUncheckedUpdateManyWithoutUserNestedInput
@@ -27256,6 +27327,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -27275,6 +27347,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -27345,6 +27418,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -27364,6 +27438,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -27447,6 +27522,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -27466,6 +27542,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -27531,6 +27608,7 @@ export namespace Prisma {
     active?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    onboardingCompleted?: BoolFilter<"User"> | boolean
   }
 
   export type XUserRolesUpsertWithWhereUniqueWithoutRoleInput = {
@@ -27583,6 +27661,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -27602,6 +27681,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -27691,6 +27771,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -27710,6 +27791,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -28509,6 +28591,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -28528,6 +28611,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -28588,6 +28672,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -28607,6 +28692,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -28657,6 +28743,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -28676,6 +28763,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -28736,6 +28824,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -28755,6 +28844,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -28931,6 +29021,7 @@ export namespace Prisma {
   export type RoleCreateWithoutXUserRolesInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutRolesInput
@@ -28939,6 +29030,7 @@ export namespace Prisma {
   export type RoleUncheckedCreateWithoutXUserRolesInput = {
     id: string
     name: $Enums.AppRole
+    label?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutRolesInput
@@ -28958,6 +29050,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
@@ -28977,6 +29070,7 @@ export namespace Prisma {
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingCompleted?: boolean
     comments?: CommentUncheckedCreateNestedManyWithoutUserInput
     eventDonations?: EventDonationUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
@@ -29006,6 +29100,7 @@ export namespace Prisma {
   export type RoleUpdateWithoutXUserRolesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutRolesNestedInput
@@ -29014,6 +29109,7 @@ export namespace Prisma {
   export type RoleUncheckedUpdateWithoutXUserRolesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutRolesNestedInput
@@ -29039,6 +29135,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -29058,6 +29155,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -29315,6 +29413,7 @@ export namespace Prisma {
   export type RoleUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     XUserRoles?: XUserRolesUpdateManyWithoutRoleNestedInput
@@ -29323,6 +29422,7 @@ export namespace Prisma {
   export type RoleUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     XUserRoles?: XUserRolesUncheckedUpdateManyWithoutRoleNestedInput
@@ -29331,6 +29431,7 @@ export namespace Prisma {
   export type RoleUncheckedUpdateManyWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: EnumAppRoleFieldUpdateOperationsInput | $Enums.AppRole
+    label?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29426,6 +29527,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
@@ -29445,6 +29547,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
     comments?: CommentUncheckedUpdateManyWithoutUserNestedInput
     eventDonations?: EventDonationUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -29464,6 +29567,7 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type XUserRolesUpdateWithoutRoleInput = {

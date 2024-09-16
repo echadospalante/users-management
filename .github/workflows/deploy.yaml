@@ -1,0 +1,49 @@
+name: Deploy Application Gateway to Virtual Box - VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_IMAGE }}:latest .
+          docker push ${{ secrets.DOCKER_IMAGE }}:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Install ssh client
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Deploy to VPS
+        run: |
+          echo "$SSH_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /path/to/your/docker-compose
+            sed -i 's|image: .*$|image: '"${{ secrets.DOCKER_IMAGE }}:latest"'|g' docker-compose.yaml
+            docker-compose pull
+            docker-compose up -d
+          EOF
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
