@@ -26,8 +26,48 @@ model User {
   ventureSponsorships  VentureSponsorship[]
   ventureSubscriptions VentureSubscription[]
   roles                Role[]                @relation("XUserRoles")
+  detail               UserDetail?           @relation(fields: [userDetailId], references: [id])
+  userDetailId         String?               @unique
+  XUserRoles           XUserRoles[]
 
-  XUserRoles XUserRoles[]
+  preferences      VentureCategory[]  @relation("XUserPreferences")
+  XUserPreferences XUserPreferences[]
+}
+
+model XUserPreferences {
+  userId          String
+  categoryId      String
+  User            User            @relation(fields: [userId], references: [id])
+  VentureCategory VentureCategory @relation(fields: [categoryId], references: [id])
+
+  @@id([userId, categoryId])
+}
+
+model UserDetail {
+  id             String       @id @default(cuid())
+  gender         String
+  birthDate      DateTime
+  user           User?
+  municipality   Municipality @relation(fields: [municipalityId], references: [id])
+  municipalityId Int
+}
+
+model Department {
+  id             Int            @id @default(autoincrement())
+  name           String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now())
+  municipalities Municipality[]
+}
+
+model Municipality {
+  id           Int          @id @default(autoincrement())
+  name         String
+  departmentId Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now())
+  Department   Department?  @relation(fields: [departmentId], references: [id])
+  UserDetail   UserDetail[]
 }
 
 model Comment {
@@ -117,30 +157,45 @@ model Role {
 }
 
 model Venture {
-  id              String            @id
-  name            String
-  slug            String            @unique
-  coverPhoto      String
-  description     String
-  ownerId         String
-  active          Boolean           @default(true)
-  verified        Boolean           @default(false)
-  detailId        String            @unique
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @default(now())
-  VentureDetail   VentureDetail     @relation(fields: [detailId], references: [id])
-  User            User              @relation(fields: [ownerId], references: [id])
-  VentureCategory VentureCategory[] @relation("VentureCategory")
+  id            String        @id
+  name          String
+  slug          String        @unique
+  coverPhoto    String
+  description   String
+  ownerId       String
+  active        Boolean       @default(true)
+  verified      Boolean       @default(false)
+  detailId      String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+  ventureDetail VentureDetail @relation(fields: [detailId], references: [id])
+  user          User          @relation(fields: [ownerId], references: [id])
+
+  ventureCategory         VentureCategory[]         @relation("XVentureVencureCategory")
+  XVentureVencureCategory XVentureVencureCategory[]
+}
+
+model XVentureVencureCategory {
+  ventureId       String
+  categoryId      String
+  Venture         Venture         @relation(fields: [ventureId], references: [id])
+  VentureCategory VentureCategory @relation(fields: [categoryId], references: [id])
+
+  @@id([ventureId, categoryId])
 }
 
 model VentureCategory {
-  id          String    @id
-  name        String
-  slug        String    @unique
-  description String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
-  Venture     Venture[] @relation("VentureCategory")
+  id               String             @id @default(cuid())
+  name             String
+  slug             String             @unique
+  description      String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now())
+  users            User[]             @relation("XUserPreferences")
+  XUserPreferences XUserPreferences[]
+
+  ventures                Venture[]                 @relation("XVentureVencureCategory")
+  XVentureVencureCategory XVentureVencureCategory[]
 }
 
 model VentureDetail {

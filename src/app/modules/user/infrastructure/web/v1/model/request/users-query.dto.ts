@@ -16,7 +16,12 @@ export default class UsersQueryDto {
   @Validate.IsBoolean()
   @Validate.IsOptional()
   public includeVentures: boolean;
-  
+
+  @Transform(({ value }) => value === 'true')
+  @Validate.IsBoolean()
+  @Validate.IsOptional()
+  public includePreferences: boolean;
+
   @Transform(({ value }) => value === 'true')
   @Validate.IsBoolean()
   @Validate.IsOptional()
@@ -48,6 +53,7 @@ export default class UsersQueryDto {
       roles: !!query.includeRoles,
       ventures: !!query.includeVentures,
       comments: !!query.includeComments,
+      preferences: !!query.includePreferences,
     };
 
     const pagination: Pagination = {

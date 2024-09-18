@@ -128,7 +128,35 @@ exports.Prisma.UserScalarFieldEnum = {
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  onboardingCompleted: 'onboardingCompleted'
+  onboardingCompleted: 'onboardingCompleted',
+  userDetailId: 'userDetailId'
+};
+
+exports.Prisma.XUserPreferencesScalarFieldEnum = {
+  userId: 'userId',
+  categoryId: 'categoryId'
+};
+
+exports.Prisma.UserDetailScalarFieldEnum = {
+  id: 'id',
+  gender: 'gender',
+  birthDate: 'birthDate',
+  municipalityId: 'municipalityId'
+};
+
+exports.Prisma.DepartmentScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MunicipalityScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  departmentId: 'departmentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.CommentScalarFieldEnum = {
@@ -215,6 +243,11 @@ exports.Prisma.VentureScalarFieldEnum = {
   detailId: 'detailId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.XVentureVencureCategoryScalarFieldEnum = {
+  ventureId: 'ventureId',
+  categoryId: 'categoryId'
 };
 
 exports.Prisma.VentureCategoryScalarFieldEnum = {
@@ -337,6 +370,10 @@ exports.PublicationType = exports.$Enums.PublicationType = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  XUserPreferences: 'XUserPreferences',
+  UserDetail: 'UserDetail',
+  Department: 'Department',
+  Municipality: 'Municipality',
   Comment: 'Comment',
   EventCategory: 'EventCategory',
   EventDonation: 'EventDonation',
@@ -346,6 +383,7 @@ exports.Prisma.ModelName = {
   PublicationContent: 'PublicationContent',
   Role: 'Role',
   Venture: 'Venture',
+  XVentureVencureCategory: 'XVentureVencureCategory',
   VentureCategory: 'VentureCategory',
   VentureDetail: 'VentureDetail',
   VentureEvent: 'VentureEvent',

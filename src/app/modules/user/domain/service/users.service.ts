@@ -3,14 +3,24 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 
-import { AppRole, ComplexInclude, Pagination, User } from 'x-ventures-domain';
+import {
+  AppRole,
+  BasicType,
+  ComplexInclude,
+  Pagination,
+  User,
+} from 'x-ventures-domain';
 
+import { NotFoundError } from 'rxjs';
+import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
+import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
-import { UsersRepository } from '../gateway/database/users.repository';
 import { RolesRepository } from '../gateway/database/roles.repository';
+import { UsersRepository } from '../gateway/database/users.repository';
 
 // export class LoginResponse {
 //   firstName: string;
@@ -33,6 +43,7 @@ export class UsersService {
     private rolesRepository: RolesRepository,
     @Inject(UserAMQPProducer)
     private userAMQPProducer: UserAMQPProducer,
+    private prismaClient: PrismaConfig,
   ) {}
 
   public getUsers(
@@ -43,7 +54,33 @@ export class UsersService {
     return this.usersRepository.findAllByCriteria(filters, include, pagination);
   }
 
-  public countUsers(filters: Partial<User>): Promise<number> {
+  public async getUserById(userId: string): Promise<User> {
+    const user = await this.usersRepository.findById(userId, {
+      comments: false,
+      notifications: false,
+      roles: true,
+      ventures: false,
+      detail: false,
+      preferences: false,
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  public async getUserByEmail(email: string): Promise<User> {
+    const user = await this.usersRepository.findByEmail(email, {
+      comments: false,
+      notifications: false,
+      roles: true,
+      ventures: false,
+      detail: false,
+      preferences: false,
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  public async countUsers(filters: Partial<BasicType<User>>): Promise<number> {
     return this.usersRepository.countByCriteria(filters);
   }
 
@@ -53,6 +90,8 @@ export class UsersService {
       notifications: false,
       roles: true,
       ventures: false,
+      detail: false,
+      preferences: false,
     });
 
     if (userDB) {
@@ -66,6 +105,8 @@ export class UsersService {
         active: userDB.active,
         createdAt: userDB.createdAt,
         updatedAt: userDB.updatedAt,
+        preferences: userDB.preferences,
+        detail: userDB.detail,
         comments: userDB.comments,
         notifications: userDB.notifications,
         ventures: userDB.ventures,
@@ -86,6 +127,7 @@ export class UsersService {
       updatedAt: new Date(),
       roles: [userRole],
       notifications: [],
+      preferences: [],
       ventures: [],
       comments: [],
     };
@@ -96,68 +138,76 @@ export class UsersService {
     });
   }
 
+  public async registerUser(
+    email: string,
+    detail: UserRegisterCreateDto,
+  ): Promise<void> {
+    const userDB = await this.usersRepository.findByEmail(email, {
+      comments: false,
+      notifications: false,
+      roles: true,
+      ventures: false,
+      detail: false,
+      preferences: false,
+    });
+    if (!userDB) throw new NotFoundException('User not found');
+
+    this.usersRepository.updateDetail(email, detail);
+    this.usersRepository.updatePreferences(email, detail.preferences);
+    this.usersRepository.update({
+      ...userDB,
+      onboardingCompleted: true,
+    });
+  }
+
   public async enableUser(userId: string): Promise<User | null> {
-    return null;
-    // const usersCache = await this.usersCache.getMany('betting_house_*');
-    // const user = usersCache.find(({ id }) => {
-    //   return id === userId;
-    // });
-    // if (!user) {
-    //   throw new NotFoundException('Betting house does not exists');
-    // }
-    // if (user.active) {
-    //   throw new UnprocessableEntityException(
-    //     'Betting house is already enabled',
-    //   );
-    // }
-    // user.active = true;
-    // return this.usersRepository.update(user).then((userDB) => {
-    //   if (!userDB) {
-    //     throw new BadRequestException('Betting house could not be enabled');
-    //   }
-    //   return this.usersCache
-    //     .set('betting_house_' + user.fullName.toLowerCase(), userDB)
-    //     .then((userCache) => {
-    //       if (!userCache) {
-    //         throw new BadRequestException('Betting house could not be saved');
-    //       }
-    //       return this.userAMQPProducer
-    //         .emitUserEnabledEvent(userDB)
-    //         .then(() => userDB);
-    //     });
-    // });
+    const user = await this.usersRepository.findById(userId, {
+      comments: false,
+      notifications: false,
+      roles: false,
+      ventures: false,
+      detail: false,
+      preferences: false,
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.active) {
+      throw new BadRequestException('User is already enabled');
+    }
+
+    user.active = true;
+    return this.usersRepository.update(user).then((userDB) => {
+      if (!userDB) {
+        throw new BadRequestException('User could not be enabled');
+      }
+      return userDB;
+    });
   }
 
   public async disableUser(userId: string): Promise<User | null> {
-    return Promise.resolve(null);
-    // const usersCache = await this.usersCache.getMany('betting_house_*');
-    // const user = usersCache.find(({ id }) => {
-    //   return id === userId;
-    // });
-    // if (!user) {
-    //   throw new NotFoundException('Betting house does not exists');
-    // }
-    // if (!user.active) {
-    //   throw new UnprocessableEntityException(
-    //     'Betting house is already disabled',
-    //   );
-    // }
-    // user.active = false;
-    // return this.usersRepository.update(user).then((userDB) => {
-    //   if (!userDB) {
-    //     throw new BadRequestException('Betting house could not be disabled');
-    //   }
-    //   return this.usersCache
-    //     .set('betting_house_' + user.fullName.toLowerCase(), userDB)
-    //     .then((userCache) => {
-    //       if (!userCache) {
-    //         throw new BadRequestException('Betting house could not be saved');
-    //       }
-    //       return this.userAMQPProducer
-    //         .emitUserDisabledEvent(userDB)
-    //         .then(() => userDB);
-    //     });
-    // });
+    const user = await this.usersRepository.findById(userId, {
+      comments: false,
+      notifications: false,
+      roles: false,
+      ventures: false,
+      detail: false,
+      preferences: false,
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (!user.active) {
+      throw new BadRequestException('User is already disabled');
+    }
+
+    user.active = false;
+    return this.usersRepository.update(user).then((userDB) => {
+      if (!userDB) {
+        throw new BadRequestException('User could not be disabled');
+      }
+      return userDB;
+    });
   }
 
   public async updateUserImage(
@@ -249,5 +299,21 @@ export class UsersService {
     //   this.logger.log(`Deleting file ${filePath}`);
     //   rmSync(filePath);
     // }
+  }
+
+  public getUserPreferences(userId: string) {
+    return this.usersRepository
+      .findById(userId, {
+        comments: false,
+        notifications: false,
+        roles: false,
+        ventures: false,
+        detail: false,
+        preferences: true,
+      })
+      .then((user) => {
+        if (!user) throw new NotFoundError('User not found');
+        return user.preferences;
+      });
   }
 }

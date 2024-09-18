@@ -8,7 +8,7 @@ CREATE TYPE "ContentType" AS ENUM ('TEXT', 'IMAGE', 'VIDEO', 'ANNOUNCEMENT', 'AC
 CREATE TYPE "NotificationStatus" AS ENUM ('READ', 'UNREAD');
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('NEW_FOLLOWER', 'NEW_COMMENT', 'NEW_SPONSOR', 'NEW_DONATION');
+CREATE TYPE "NotificationType" AS ENUM ('WELCOME', 'ACCOUNT_VERIFIED', 'ACCOUNT_LOCKED', 'ACCOUNT_UNLOCKED', 'NEW_FOLLOWER', 'NEW_COMMENT', 'NEW_SPONSOR', 'NEW_DONATION');
 
 -- CreateEnum
 CREATE TYPE "PublicationType" AS ENUM ('TEXTUAL', 'VIDEO', 'IMAGE', 'ANNOUNCEMENT', 'ACHIEVEMENT');
@@ -23,8 +23,41 @@ CREATE TABLE "User" (
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "onboardingCompleted" BOOLEAN NOT NULL DEFAULT false,
+    "userId" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "UserDetail" (
+    "id" TEXT NOT NULL,
+    "gender" TEXT NOT NULL,
+    "birthDate" TIMESTAMP(3) NOT NULL,
+    "municipalityId" INTEGER NOT NULL,
+
+    CONSTRAINT "UserDetail_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Department" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Department_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Municipality" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "departmentId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Municipality_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -116,6 +149,7 @@ CREATE TABLE "PublicationContent" (
 CREATE TABLE "Role" (
     "id" TEXT NOT NULL,
     "name" "AppRole" NOT NULL,
+    "label" TEXT NOT NULL DEFAULT '',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -250,6 +284,9 @@ CREATE TABLE "_VentureCategory" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_userId_key" ON "User"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "EventCategory_name_key" ON "EventCategory"("name");
 
 -- CreateIndex
@@ -284,6 +321,15 @@ CREATE UNIQUE INDEX "_VentureCategory_AB_unique" ON "_VentureCategory"("A", "B")
 
 -- CreateIndex
 CREATE INDEX "_VentureCategory_B_index" ON "_VentureCategory"("B");
+
+-- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_userId_fkey" FOREIGN KEY ("userId") REFERENCES "UserDetail"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserDetail" ADD CONSTRAINT "UserDetail_municipalityId_fkey" FOREIGN KEY ("municipalityId") REFERENCES "Municipality"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Municipality" ADD CONSTRAINT "Municipality_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_publicationId_fkey" FOREIGN KEY ("publicationId") REFERENCES "VenturePublication"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
