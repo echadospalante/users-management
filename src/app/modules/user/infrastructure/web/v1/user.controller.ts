@@ -31,6 +31,7 @@ export class UsersController {
   @Http.Post()
   @Http.HttpCode(Http.HttpStatus.CREATED)
   public createUser(@Http.Body() userCreateDto: UserCreateDto): Promise<User> {
+    this.logger.log(userCreateDto)
     return this.usersService.saveUser(userCreateDto);
   }
 

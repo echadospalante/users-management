@@ -60,7 +60,7 @@ export class UsersRepositoryImpl implements UsersRepository {
       .then((user) => user as User | null);
   }
 
-  public countByCriteria(filter: Partial<BasicType<User>>): Promise<number> {
+  public async countByCriteria(filter: Partial<BasicType<User>>): Promise<number> {
     return 0;
   }
 
