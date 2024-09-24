@@ -15,6 +15,7 @@ model User {
   firstName            String
   lastName             String
   active               Boolean               @default(true)
+  verified             Boolean               @default(false)
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @default(now()) @updatedAt
   onboardingCompleted  Boolean               @default(false)

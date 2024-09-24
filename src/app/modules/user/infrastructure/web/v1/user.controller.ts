@@ -8,6 +8,7 @@ import { UsersService } from '../../../domain/service/users.service';
 import UserCreateDto from './model/request/user-create.dto';
 import UserRegisterCreateDto from './model/request/user-preferences-create.dto';
 import UsersQueryDto from './model/request/users-query.dto';
+import UserRolesUpdateDto from './model/request/user-roles-update.dto';
 
 const path = '/users';
 
@@ -28,23 +29,36 @@ export class UsersController {
     return { items, total };
   }
 
+  @Http.Get('/roles')
+  @Http.HttpCode(Http.HttpStatus.OK)
+  public async getAllRoles() {
+    return this.usersService.getRoles();
+  }
+
   @Http.Post()
   @Http.HttpCode(Http.HttpStatus.CREATED)
   public createUser(@Http.Body() userCreateDto: UserCreateDto): Promise<User> {
-    this.logger.log(userCreateDto)
+    this.logger.log(userCreateDto);
     return this.usersService.saveUser(userCreateDto);
   }
 
-  @Http.Put('enable/:id')
+  @Http.Put('/enable/:id')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   public enableUser(@Http.Param('id') userId: string): Promise<User | null> {
     return this.usersService.enableUser(userId);
   }
 
-  @Http.Put('disable/:id')
+  @Http.Put('/disable/:id')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public DisableUser(@Http.Param('id') userId: string): Promise<User | null> {
+  public disableUser(@Http.Param('id') userId: string): Promise<User | null> {
     return this.usersService.disableUser(userId);
+  }
+
+  @Http.Put('/roles')
+  @Http.HttpCode(Http.HttpStatus.ACCEPTED)
+  public changeUserRoles(@Http.Body() body: UserRolesUpdateDto): Promise<void> {
+    const { email, roles } = body;
+    return this.usersService.updateRolesToUser(email, roles);
   }
 
   @Http.Put('/image/:id')
@@ -62,8 +76,8 @@ export class UsersController {
 
   @Http.Delete(':id')
   @Http.HttpCode(Http.HttpStatus.NO_CONTENT)
-  public deleteUser(@Http.Param('id') userId: string): Promise<void> {
-    return this.usersService.deleteUserById(userId);
+  public deleteUser(@Http.Param('email') email: string): Promise<void> {
+    return this.usersService.deleteUserByEmail(email);
   }
 
   @Http.Post('/register/:email')

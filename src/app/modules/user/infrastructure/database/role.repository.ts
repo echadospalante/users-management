@@ -22,4 +22,16 @@ export class RolesRepositoryImpl implements RolesRepository {
       .findMany({ include })
       .then((roles) => roles as Role[]);
   }
+
+  public findManyByName(roles: AppRole[]): Promise<Role[]> {
+    return this.prismaClient.client.role
+      .findMany({
+        where: {
+          name: {
+            in: roles,
+          },
+        },
+      })
+      .then((roles) => roles as Role[]);
+  }
 }

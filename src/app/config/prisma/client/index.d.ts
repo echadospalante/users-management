@@ -3391,6 +3391,7 @@ export namespace Prisma {
     firstName: string | null
     lastName: string | null
     active: boolean | null
+    verified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     onboardingCompleted: boolean | null
@@ -3404,6 +3405,7 @@ export namespace Prisma {
     firstName: string | null
     lastName: string | null
     active: boolean | null
+    verified: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
     onboardingCompleted: boolean | null
@@ -3417,6 +3419,7 @@ export namespace Prisma {
     firstName: number
     lastName: number
     active: number
+    verified: number
     createdAt: number
     updatedAt: number
     onboardingCompleted: number
@@ -3432,6 +3435,7 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     active?: true
+    verified?: true
     createdAt?: true
     updatedAt?: true
     onboardingCompleted?: true
@@ -3445,6 +3449,7 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     active?: true
+    verified?: true
     createdAt?: true
     updatedAt?: true
     onboardingCompleted?: true
@@ -3458,6 +3463,7 @@ export namespace Prisma {
     firstName?: true
     lastName?: true
     active?: true
+    verified?: true
     createdAt?: true
     updatedAt?: true
     onboardingCompleted?: true
@@ -3544,6 +3550,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active: boolean
+    verified: boolean
     createdAt: Date
     updatedAt: Date
     onboardingCompleted: boolean
@@ -3574,6 +3581,7 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     active?: boolean
+    verified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     onboardingCompleted?: boolean
@@ -3600,6 +3608,7 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     active?: boolean
+    verified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     onboardingCompleted?: boolean
@@ -3614,6 +3623,7 @@ export namespace Prisma {
     firstName?: boolean
     lastName?: boolean
     active?: boolean
+    verified?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     onboardingCompleted?: boolean
@@ -3662,6 +3672,7 @@ export namespace Prisma {
       firstName: string
       lastName: string
       active: boolean
+      verified: boolean
       createdAt: Date
       updatedAt: Date
       onboardingCompleted: boolean
@@ -4077,6 +4088,7 @@ export namespace Prisma {
     readonly firstName: FieldRef<"User", 'String'>
     readonly lastName: FieldRef<"User", 'String'>
     readonly active: FieldRef<"User", 'Boolean'>
+    readonly verified: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly onboardingCompleted: FieldRef<"User", 'Boolean'>
@@ -26153,6 +26165,7 @@ export namespace Prisma {
     firstName: 'firstName',
     lastName: 'lastName',
     active: 'active',
+    verified: 'verified',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     onboardingCompleted: 'onboardingCompleted',
@@ -26586,6 +26599,7 @@ export namespace Prisma {
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     active?: BoolFilter<"User"> | boolean
+    verified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     onboardingCompleted?: BoolFilter<"User"> | boolean
@@ -26611,6 +26625,7 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     active?: SortOrder
+    verified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     onboardingCompleted?: SortOrder
@@ -26640,6 +26655,7 @@ export namespace Prisma {
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     active?: BoolFilter<"User"> | boolean
+    verified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     onboardingCompleted?: BoolFilter<"User"> | boolean
@@ -26664,6 +26680,7 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     active?: SortOrder
+    verified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     onboardingCompleted?: SortOrder
@@ -26683,6 +26700,7 @@ export namespace Prisma {
     firstName?: StringWithAggregatesFilter<"User"> | string
     lastName?: StringWithAggregatesFilter<"User"> | string
     active?: BoolWithAggregatesFilter<"User"> | boolean
+    verified?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     onboardingCompleted?: BoolWithAggregatesFilter<"User"> | boolean
@@ -28048,6 +28066,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -28072,6 +28091,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -28096,6 +28116,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -28120,6 +28141,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -28144,6 +28166,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -28157,6 +28180,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -28169,6 +28193,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -29699,6 +29724,7 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     active?: SortOrder
+    verified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     onboardingCompleted?: SortOrder
@@ -29712,6 +29738,7 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     active?: SortOrder
+    verified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     onboardingCompleted?: SortOrder
@@ -29725,6 +29752,7 @@ export namespace Prisma {
     firstName?: SortOrder
     lastName?: SortOrder
     active?: SortOrder
+    verified?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     onboardingCompleted?: SortOrder
@@ -33571,6 +33599,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -33594,6 +33623,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -33662,6 +33692,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -33685,6 +33716,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -33743,6 +33775,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -33766,6 +33799,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -33825,6 +33859,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -33848,6 +33883,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34070,6 +34106,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34093,6 +34130,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34167,6 +34205,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34190,6 +34229,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34356,6 +34396,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34379,6 +34420,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34459,6 +34501,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34482,6 +34525,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34581,6 +34625,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34604,6 +34649,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34643,6 +34689,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34666,6 +34713,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34718,6 +34766,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34741,6 +34790,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34815,6 +34865,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34838,6 +34889,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -34925,6 +34977,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -34948,6 +35001,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -35017,6 +35071,7 @@ export namespace Prisma {
     firstName?: StringFilter<"User"> | string
     lastName?: StringFilter<"User"> | string
     active?: BoolFilter<"User"> | boolean
+    verified?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     onboardingCompleted?: BoolFilter<"User"> | boolean
@@ -35071,6 +35126,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -35094,6 +35150,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -35211,6 +35268,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -35234,6 +35292,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -35437,6 +35496,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -35460,6 +35520,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36330,6 +36391,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36353,6 +36415,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36417,6 +36480,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -36440,6 +36504,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -36494,6 +36559,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36517,6 +36583,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36581,6 +36648,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -36604,6 +36672,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -36813,6 +36882,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36836,6 +36906,7 @@ export namespace Prisma {
     firstName: string
     lastName: string
     active?: boolean
+    verified?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     onboardingCompleted?: boolean
@@ -36904,6 +36975,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -36927,6 +36999,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -37408,6 +37481,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -37431,6 +37505,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -37454,6 +37529,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -37542,6 +37618,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -37565,6 +37642,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
@@ -37588,6 +37666,7 @@ export namespace Prisma {
     firstName?: StringFieldUpdateOperationsInput | string
     lastName?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    verified?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
