@@ -42,16 +42,31 @@ export class UsersController {
     return this.usersService.saveUser(userCreateDto);
   }
 
-  @Http.Put('/enable/:id')
+  @Http.Put('/enable/:email')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public enableUser(@Http.Param('id') userId: string): Promise<User | null> {
-    return this.usersService.enableUser(userId);
+  public enableUser(@Http.Param('email') email: string): Promise<User | null> {
+    return this.usersService.enableUser(email);
   }
 
-  @Http.Put('/disable/:id')
+  @Http.Put('/disable/:email')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public disableUser(@Http.Param('id') userId: string): Promise<User | null> {
-    return this.usersService.disableUser(userId);
+  public disableUser(@Http.Param('email') email: string): Promise<User | null> {
+    return this.usersService.disableUser(email);
+  }
+
+  @Http.Put('/verify/:email')
+  @Http.HttpCode(Http.HttpStatus.ACCEPTED)
+  public verifyUser(@Http.Param('email') email: string): Promise<User | null> {
+    return this.usersService.verifyUser(email);
+  }
+
+  @Http.Put('/unverify/:email')
+  @Http.HttpCode(Http.HttpStatus.ACCEPTED)
+  public unverifyUser(
+    @Http.Param('email') email: string,
+  ): Promise<User | null> {
+    console.log({ EMAIL: email });
+    return this.usersService.unverifyUser(email);
   }
 
   @Http.Put('/roles')

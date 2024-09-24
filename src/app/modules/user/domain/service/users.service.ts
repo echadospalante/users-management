@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Inject,
   Injectable,
   Logger,
@@ -88,6 +89,8 @@ export class UsersService {
       roles: true,
     });
 
+    if (userDB && !userDB.active)
+      throw new ForbiddenException('User is disabled');
     if (userDB) return userDB;
 
     const userToSave: User = await this.buildUserToSave(user);
@@ -133,7 +136,7 @@ export class UsersService {
   }
 
   public async enableUser(userId: string): Promise<User | null> {
-    const user = await this.usersRepository.findById(userId, {});
+    const user = await this.usersRepository.findById(userId, { roles: true });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -150,17 +153,51 @@ export class UsersService {
   }
 
   public async disableUser(userId: string): Promise<User | null> {
-    const user = await this.usersRepository.findById(userId, {});
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    if (!user.active) {
-      throw new BadRequestException('User is already disabled');
-    }
+    const user = await this.usersRepository.findById(userId, { roles: true });
+    if (!user) throw new NotFoundException('User not found');
+
+    if (!user.active) throw new BadRequestException('User is already disabled');
+
+    const isAdmin = user.roles.some(({ name }) => name === AppRole.ADMIN);
+    if (isAdmin) throw new ForbiddenException('Admin user cannot be disabled');
 
     return this.usersRepository.lockAccount(user.email).then((userDB) => {
       if (!userDB) {
         throw new BadRequestException('User could not be disabled');
+      }
+      return userDB;
+    });
+  }
+
+  public async verifyUser(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findByEmail(email, {});
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.verified)
+      throw new BadRequestException('User is already verified');
+
+    return this.usersRepository.verifyAccount(user.email).then((userDB) => {
+      if (!userDB) {
+        throw new BadRequestException('User could not be verified');
+      }
+      return userDB;
+    });
+  }
+
+  public async unverifyUser(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findByEmail(email, { roles: true });
+    if (!user) throw new NotFoundException('User not found');
+    console.log({ USER: user });
+    if (!user.verified)
+      throw new BadRequestException('User is already unverified');
+
+    const isAdmin = user.roles.some(({ name }) => name === AppRole.ADMIN);
+    if (isAdmin)
+      throw new ForbiddenException('Admin user cannot be unverified');
+
+    return this.usersRepository.unverifyAccount(user.email).then((userDB) => {
+      if (!userDB) {
+        throw new BadRequestException('User could not be unverified');
       }
       return userDB;
     });
