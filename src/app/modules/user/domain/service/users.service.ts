@@ -15,7 +15,6 @@ import {
   User,
 } from 'x-ventures-domain';
 
-import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
@@ -43,7 +42,6 @@ export class UsersService {
     private rolesRepository: RolesRepository,
     @Inject(UserAMQPProducer)
     private userAMQPProducer: UserAMQPProducer,
-    private prismaClient: PrismaConfig,
   ) {}
 
   public getUsers(
@@ -91,12 +89,17 @@ export class UsersService {
 
     if (userDB && !userDB.active)
       throw new ForbiddenException('User is disabled');
-    if (userDB) return userDB;
+
+    if (userDB) {
+      this.userAMQPProducer.emitUserLoggedEvent(userDB);
+      return userDB;
+    }
 
     const userToSave: User = await this.buildUserToSave(user);
 
     return this.usersRepository.save(userToSave).then((savedUser) => {
       this.logger.log(`User ${userToSave.email} saved`);
+      this.userAMQPProducer.emitUserCreatedEvent(savedUser);
       return savedUser;
     });
   }
@@ -133,6 +136,7 @@ export class UsersService {
     this.usersRepository.updateDetail(email, detail);
     this.usersRepository.updatePreferences(email, detail.preferences);
     this.usersRepository.setOnboardingCompleted(email);
+    this.userAMQPProducer.emitUserRegisteredEvent(userDB);
   }
 
   public async enableUser(userId: string): Promise<User | null> {
@@ -148,6 +152,7 @@ export class UsersService {
       if (!userDB) {
         throw new BadRequestException('User could not be enabled');
       }
+      this.userAMQPProducer.emitUserEnabledEvent(userDB);
       return userDB;
     });
   }
@@ -165,6 +170,7 @@ export class UsersService {
       if (!userDB) {
         throw new BadRequestException('User could not be disabled');
       }
+      this.userAMQPProducer.emitUserDisabledEvent(userDB);
       return userDB;
     });
   }
@@ -180,6 +186,7 @@ export class UsersService {
       if (!userDB) {
         throw new BadRequestException('User could not be verified');
       }
+      this.userAMQPProducer.emitUserVerifiedEvent(userDB);
       return userDB;
     });
   }
@@ -199,6 +206,7 @@ export class UsersService {
       if (!userDB) {
         throw new BadRequestException('User could not be unverified');
       }
+      this.userAMQPProducer.emitUserUnverifiedEvent(userDB);
       return userDB;
     });
   }
@@ -270,6 +278,7 @@ export class UsersService {
       this.usersRepository.removeUserRoles(email, rolesToRemove),
     ]).then(() => {
       this.logger.log(`Roles updated for user ${email}`);
+      this.userAMQPProducer.emitUserUpdatedEvent(user);
     });
   }
 }

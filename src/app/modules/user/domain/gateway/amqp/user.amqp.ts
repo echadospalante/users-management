@@ -5,7 +5,11 @@ export interface UserAMQPProducer {
   emitUserUpdatedEvent(user: User): Promise<boolean>;
   emitUserEnabledEvent(user: User): Promise<boolean>;
   emitUserDisabledEvent(user: User): Promise<boolean>;
-  emitUserDeletedEvent(userId: string): Promise<boolean>;
+  emitUserLoggedEvent(user: User): Promise<boolean>;
+  emitUserDeletedEvent(user: User): Promise<boolean>;
+  emitUserRegisteredEvent(user: User): Promise<boolean>;
+  emitUserVerifiedEvent(user: User): Promise<boolean>;
+  emitUserUnverifiedEvent(user: User): Promise<boolean>;
 }
 
 export const UserAMQPProducer = Symbol('UserAMQPProducer');
