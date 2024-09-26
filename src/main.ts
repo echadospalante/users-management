@@ -24,8 +24,8 @@ const main = async () => {
     credentials: true,
   });
 
-  await app.listen(3600).then(() => {
-    logger.log(`Server up and running on port ${3600}`);
+  await app.listen(3010).then(() => {
+    logger.log(`Server up and running on port ${3010}`);
   });
 };
 

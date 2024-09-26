@@ -20,7 +20,7 @@ COPY --from=builder /app/package.json /app
 COPY --from=builder /app/package-lock.json /app
 COPY --from=builder /app/.env /app
 
-EXPOSE 4800
+EXPOSE 3010
 
 WORKDIR /app
 
