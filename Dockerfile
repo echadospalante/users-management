@@ -6,7 +6,6 @@ RUN npm install -g typescript
 
 COPY package.json .
 COPY package-lock.json .
-COPY ./echadospalante-core ./../echadospalante-core
 
 RUN npm install
 
