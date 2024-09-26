@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { Observable } from 'rxjs';
-import { UserCreate } from 'x-ventures-domain';
+import { UserCreate } from 'echadospalante-core';
 import * as Yup from 'yup';
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 

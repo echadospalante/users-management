@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Role } from 'x-ventures-domain';
+import { Role } from 'echadospalante-core';
 import { RolesRepository } from '../gateway/database/roles.repository';
 
 @Injectable()

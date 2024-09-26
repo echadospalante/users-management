@@ -1,5 +1,5 @@
 import * as Validate from 'class-validator';
-import { AppRole } from 'x-ventures-domain';
+import { AppRole } from 'echadospalante-core';
 
 export default class UserRolesUpdateDto {
   @Validate.IsString()

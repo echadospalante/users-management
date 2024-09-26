@@ -4,7 +4,7 @@ import {
   Pagination,
   Role,
   User,
-} from 'x-ventures-domain';
+} from 'echadospalante-core';
 import UserRegisterCreateDto from '../../../infrastructure/web/v1/model/request/user-preferences-create.dto';
 
 export interface UsersRepository {

@@ -6,7 +6,7 @@ RUN npm install -g typescript
 
 COPY package.json .
 COPY package-lock.json .
-COPY ./x-ventures-domain ./../x-ventures-domain
+COPY ./echadospalante-core ./../echadospalante-core
 
 RUN npm install
 

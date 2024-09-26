@@ -2,7 +2,7 @@ import * as Http from '@nestjs/common';
 import { Logger, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { User } from 'x-ventures-domain';
+import { User } from 'echadospalante-core';
 
 import { UsersService } from '../../../domain/service/users.service';
 import UserCreateDto from './model/request/user-create.dto';

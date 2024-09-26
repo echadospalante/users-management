@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { AppRole, ComplexType, Role } from 'x-ventures-domain';
+import { AppRole, ComplexType, Role } from 'echadospalante-core';
 
 import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import { RolesRepository } from '../../domain/gateway/database/roles.repository';

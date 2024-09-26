@@ -13,7 +13,7 @@ import {
   ComplexInclude,
   Pagination,
   User,
-} from 'x-ventures-domain';
+} from 'echadospalante-core';
 
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';

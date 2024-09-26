@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-// import { BasicType, ComplexInclude, Pagination, User } from 'x-ventures-domain';
+// import { BasicType, ComplexInclude, Pagination, User } from 'echadospalante-core';
 
 import {
   BasicType,
@@ -8,7 +8,7 @@ import {
   Pagination,
   Role,
   User,
-} from 'x-ventures-domain';
+} from 'echadospalante-core';
 
 import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';

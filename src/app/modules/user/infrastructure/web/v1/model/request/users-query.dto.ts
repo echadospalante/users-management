@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import * as Validate from 'class-validator';
-import { ComplexInclude, Pagination, User } from 'x-ventures-domain';
+import { ComplexInclude, Pagination, User } from 'echadospalante-core';
 export default class UsersQueryDto {
   @Transform(({ value }) => value === 'true')
   @Validate.IsBoolean()

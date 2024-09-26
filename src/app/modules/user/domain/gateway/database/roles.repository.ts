@@ -1,4 +1,4 @@
-import { AppRole, ComplexType, Role } from 'x-ventures-domain';
+import { AppRole, ComplexType, Role } from 'echadospalante-core';
 
 export interface RolesRepository {
   findManyByName(roles: AppRole[]): Promise<Role[]>;
