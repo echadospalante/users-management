@@ -37,7 +37,7 @@ model User {
 
 model XUserPreferences {
   userId          String
-  categoryId      String
+  categoryId      Int
   User            User            @relation(fields: [userId], references: [id])
   VentureCategory VentureCategory @relation(fields: [categoryId], references: [id])
 
@@ -178,7 +178,7 @@ model Venture {
 
 model XVentureVencureCategory {
   ventureId       String
-  categoryId      String
+  categoryId      Int
   Venture         Venture         @relation(fields: [ventureId], references: [id])
   VentureCategory VentureCategory @relation(fields: [categoryId], references: [id])
 
@@ -186,7 +186,7 @@ model XVentureVencureCategory {
 }
 
 model VentureCategory {
-  id               String             @id @default(cuid())
+  id               Int             @id @default(autoincrement())
   name             String
   slug             String             @unique
   description      String
