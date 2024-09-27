@@ -22,6 +22,7 @@ export class UsersController {
   @Http.HttpCode(Http.HttpStatus.OK)
   public async getAllUsers(@Http.Query() query: UsersQueryDto) {
     const { include, pagination, filters } = UsersQueryDto.parseQuery(query);
+    console.log({ filters });
     const [items, total] = await Promise.all([
       this.usersService.getUsers(filters, include, pagination),
       0,

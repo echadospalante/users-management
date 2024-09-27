@@ -6,6 +6,7 @@ import {
   User,
 } from 'echadospalante-core';
 import UserRegisterCreateDto from '../../../infrastructure/web/v1/model/request/user-preferences-create.dto';
+import { UserFilters } from '../../core/user-filters';
 
 export interface UsersRepository {
   updatePreferences(userId: string, preferences: string[]): Promise<void>;
@@ -16,7 +17,7 @@ export interface UsersRepository {
   ): Promise<User | null>;
   countByCriteria(filter: Partial<BasicType<User>>): Promise<number>;
   findAllByCriteria(
-    filter: Partial<User>,
+    filters: UserFilters,
     include: Partial<ComplexInclude<User>>,
     pagination?: Pagination,
   ): Promise<User[]>;

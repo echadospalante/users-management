@@ -20,6 +20,7 @@ import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/use
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { RolesRepository } from '../gateway/database/roles.repository';
 import { UsersRepository } from '../gateway/database/users.repository';
+import { UserFilters } from '../core/user-filters';
 
 // export class LoginResponse {
 //   firstName: string;
@@ -45,7 +46,7 @@ export class UsersService {
   ) {}
 
   public getUsers(
-    filters: Partial<User>,
+    filters: UserFilters,
     include: ComplexInclude<User>,
     pagination: Pagination,
   ): Promise<User[]> {

@@ -13,6 +13,7 @@ import {
 import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
 import UserRegisterCreateDto from '../web/v1/model/request/user-preferences-create.dto';
+import { UserFilters } from '../../domain/core/user-filters';
 
 @Injectable()
 export class UsersRepositoryImpl implements UsersRepository {
@@ -75,12 +76,44 @@ export class UsersRepositoryImpl implements UsersRepository {
   }
 
   public findAllByCriteria(
-    filter: Partial<User>,
+    filters: UserFilters,
     include: ComplexInclude<User>,
     pagination?: Pagination,
   ): Promise<User[]> {
+    const { gender, role, search } = filters;
+    console.log({ filters });
     return this.prismaClient.client.user
       .findMany({
+        where: {
+          AND: {
+            OR: [
+              {
+                email: {
+                  contains: search,
+                },
+              },
+              {
+                firstName: {
+                  contains: search,
+                },
+              },
+              {
+                lastName: {
+                  contains: search,
+                },
+              },
+            ],
+
+            detail: {
+              gender,
+            },
+            roles: {
+              some: {
+                name: role,
+              },
+            },
+          },
+        },
         include,
         skip: pagination?.skip,
         take: pagination?.take,

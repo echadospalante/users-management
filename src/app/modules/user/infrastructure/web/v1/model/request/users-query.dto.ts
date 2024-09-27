@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import * as Validate from 'class-validator';
-import { ComplexInclude, Pagination, User } from 'echadospalante-core';
+import { AppRole, ComplexInclude, Pagination, User } from 'echadospalante-core';
+import { UserFilters } from 'src/app/modules/user/domain/core/user-filters';
 export default class UsersQueryDto {
   @Transform(({ value }) => value === 'true')
   @Validate.IsBoolean()
@@ -27,6 +28,11 @@ export default class UsersQueryDto {
   @Validate.IsOptional()
   public includeComments: boolean;
 
+  @Transform(({ value }) => value === 'true')
+  @Validate.IsBoolean()
+  @Validate.IsOptional()
+  public includeDetail: boolean;
+
   @Validate.IsNumber()
   @Validate.IsInt()
   @Transform((param) => parseInt(param.value))
@@ -40,20 +46,25 @@ export default class UsersQueryDto {
 
   @Validate.IsString()
   @Validate.IsOptional()
-  public search: string;
+  public search?: string;
 
-  @Validate.IsBoolean()
+  @Validate.IsString()
+  @Validate.IsIn(['M', 'F', 'O'])
   @Validate.IsOptional()
-  @Transform(({ value }) => value === 'true')
-  public active: boolean;
+  public gender?: 'M' | 'F' | 'O';
 
-  public static parseQuery(query: UsersQueryDto) {
+  @Validate.IsOptional()
+  @Validate.IsEnum(AppRole)
+  public role?: AppRole;
+
+  static parseQuery(query: UsersQueryDto) {
     const include: ComplexInclude<User> = {
       notifications: !!query.includeNotifications,
       roles: !!query.includeRoles,
       ventures: !!query.includeVentures,
       comments: !!query.includeComments,
       preferences: !!query.includePreferences,
+      detail: !!query.includeDetail,
     };
 
     const pagination: Pagination = {
@@ -61,7 +72,11 @@ export default class UsersQueryDto {
       take: query.take,
     };
 
-    const filters: Partial<User> = {};
+    const filters: UserFilters = {
+      search: query.search,
+      gender: query.gender,
+      role: query.role,
+    };
 
     return {
       include,
