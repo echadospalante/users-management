@@ -55,10 +55,7 @@ export class UsersService {
 
   public async getUserById(userId: string): Promise<User> {
     const user = await this.usersRepository.findById(userId, {
-      comments: false,
-      notifications: false,
       roles: true,
-      ventures: false,
       detail: false,
       preferences: false,
     });
@@ -68,10 +65,7 @@ export class UsersService {
 
   public async getUserByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findByEmail(email, {
-      comments: false,
-      notifications: false,
       roles: true,
-      ventures: false,
       detail: false,
       preferences: false,
     });
@@ -79,7 +73,7 @@ export class UsersService {
     return user;
   }
 
-  public async countUsers(filters: Partial<BasicType<User>>): Promise<number> {
+  public async countUsers(filters: UserFilters): Promise<number> {
     return this.usersRepository.countByCriteria(filters);
   }
 
@@ -118,10 +112,7 @@ export class UsersService {
       createdAt: new Date(),
       updatedAt: new Date(),
       roles: [userRole],
-      notifications: [],
       preferences: [],
-      ventures: [],
-      comments: [],
     };
   }
 
@@ -134,7 +125,7 @@ export class UsersService {
     });
     if (!userDB) throw new NotFoundException('User not found');
 
-    this.usersRepository.updateDetail(email, detail);
+    this.usersRepository.registerUser(email, detail);
     this.usersRepository.updatePreferences(email, detail.preferences);
     this.usersRepository.setOnboardingCompleted(email);
     this.userAMQPProducer.emitUserRegisteredEvent(userDB);

@@ -1,19 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
-// import { BasicType, ComplexInclude, Pagination, User } from 'echadospalante-core';
-
-import {
-  BasicType,
-  ComplexInclude,
-  Pagination,
-  Role,
-  User,
-} from 'echadospalante-core';
+import { ComplexInclude, Pagination, Role, User } from 'echadospalante-core';
 
 import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
+import { UserFilters } from '../../domain/core/user-filters';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
 import UserRegisterCreateDto from '../web/v1/model/request/user-preferences-create.dto';
-import { UserFilters } from '../../domain/core/user-filters';
 
 @Injectable()
 export class UsersRepositoryImpl implements UsersRepository {
@@ -27,26 +19,12 @@ export class UsersRepositoryImpl implements UsersRepository {
           roles: {
             connect: user.roles.map((role) => ({ id: role.id })),
           },
-          notifications: {
-            connect: user.notifications.map((notification) => ({
-              id: notification.id,
-            })),
-          },
-          comments: {
-            connect: user.comments.map((comment) => ({
-              id: comment.id,
-            })),
-          },
-          ventures: {
-            connect: user.ventures.map((venture) => ({
-              id: venture.id,
-            })),
-          },
           preferences: {
             connect: user.preferences.map((preference) => ({
               id: preference.id,
             })),
           },
+          contact: undefined,
           detail: undefined,
         },
       })
@@ -67,11 +45,39 @@ export class UsersRepositoryImpl implements UsersRepository {
       .then((user) => user as User | null);
   }
 
-  public async countByCriteria(
-    filter: Partial<BasicType<User>>,
-  ): Promise<number> {
+  public async countByCriteria(filters: UserFilters): Promise<number> {
+    const { gender, role, search } = filters;
     return this.prismaClient.client.user.count({
-      where: { ...filter },
+      where: {
+        AND: {
+          OR: [
+            {
+              email: {
+                contains: search,
+              },
+            },
+            {
+              firstName: {
+                contains: search,
+              },
+            },
+            {
+              lastName: {
+                contains: search,
+              },
+            },
+          ],
+
+          detail: {
+            gender,
+          },
+          roles: {
+            some: {
+              name: role,
+            },
+          },
+        },
+      },
     });
   }
 
@@ -306,7 +312,7 @@ export class UsersRepositoryImpl implements UsersRepository {
       });
   }
 
-  public updateDetail(
+  public registerUser(
     email: string,
     detail: UserRegisterCreateDto,
   ): Promise<void> {

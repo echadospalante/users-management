@@ -1,21 +1,15 @@
-import {
-  BasicType,
-  ComplexInclude,
-  Pagination,
-  Role,
-  User,
-} from 'echadospalante-core';
+import { ComplexInclude, Pagination, Role, User } from 'echadospalante-core';
 import UserRegisterCreateDto from '../../../infrastructure/web/v1/model/request/user-preferences-create.dto';
 import { UserFilters } from '../../core/user-filters';
 
 export interface UsersRepository {
   updatePreferences(userId: string, preferences: string[]): Promise<void>;
-  updateDetail(userId: string, detail: UserRegisterCreateDto): Promise<void>;
+  registerUser(userId: string, detail: UserRegisterCreateDto): Promise<void>;
   findByEmail(
     email: string,
     include: Partial<ComplexInclude<User>>,
   ): Promise<User | null>;
-  countByCriteria(filter: Partial<BasicType<User>>): Promise<number>;
+  countByCriteria(filters: UserFilters): Promise<number>;
   findAllByCriteria(
     filters: UserFilters,
     include: Partial<ComplexInclude<User>>,
