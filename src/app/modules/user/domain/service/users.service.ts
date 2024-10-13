@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Inject,
   Injectable,
   Logger,
@@ -12,15 +13,14 @@ import {
   ComplexInclude,
   Pagination,
   User,
-} from 'x-ventures-domain';
+} from 'echadospalante-core';
 
-import { NotFoundError } from 'rxjs';
-import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { RolesRepository } from '../gateway/database/roles.repository';
 import { UsersRepository } from '../gateway/database/users.repository';
+import { UserFilters } from '../core/user-filters';
 
 // export class LoginResponse {
 //   firstName: string;
@@ -43,11 +43,10 @@ export class UsersService {
     private rolesRepository: RolesRepository,
     @Inject(UserAMQPProducer)
     private userAMQPProducer: UserAMQPProducer,
-    private prismaClient: PrismaConfig,
   ) {}
 
   public getUsers(
-    filters: Partial<User>,
+    filters: UserFilters,
     include: ComplexInclude<User>,
     pagination: Pagination,
   ): Promise<User[]> {
@@ -56,10 +55,7 @@ export class UsersService {
 
   public async getUserById(userId: string): Promise<User> {
     const user = await this.usersRepository.findById(userId, {
-      comments: false,
-      notifications: false,
       roles: true,
-      ventures: false,
       detail: false,
       preferences: false,
     });
@@ -69,10 +65,7 @@ export class UsersService {
 
   public async getUserByEmail(email: string): Promise<User> {
     const user = await this.usersRepository.findByEmail(email, {
-      comments: false,
-      notifications: false,
       roles: true,
-      ventures: false,
       detail: false,
       preferences: false,
     });
@@ -80,62 +73,47 @@ export class UsersService {
     return user;
   }
 
-  public async countUsers(filters: Partial<BasicType<User>>): Promise<number> {
+  public async countUsers(filters: UserFilters): Promise<number> {
     return this.usersRepository.countByCriteria(filters);
   }
 
   public async saveUser(user: UserCreateDto): Promise<User> {
     const userDB = await this.usersRepository.findByEmail(user.email, {
-      comments: false,
-      notifications: false,
       roles: true,
-      ventures: false,
-      detail: false,
-      preferences: false,
     });
 
+    if (userDB && !userDB.active)
+      throw new ForbiddenException('User is disabled');
+
     if (userDB) {
-      return {
-        firstName: userDB.firstName,
-        lastName: userDB.lastName,
-        picture: userDB.picture,
-        email: userDB.email,
-        id: userDB.id,
-        roles: userDB.roles,
-        active: userDB.active,
-        createdAt: userDB.createdAt,
-        updatedAt: userDB.updatedAt,
-        preferences: userDB.preferences,
-        detail: userDB.detail,
-        comments: userDB.comments,
-        notifications: userDB.notifications,
-        ventures: userDB.ventures,
-        onboardingCompleted: userDB.onboardingCompleted,
-      };
+      this.userAMQPProducer.emitUserLoggedEvent(userDB);
+      return userDB;
     }
 
+    const userToSave: User = await this.buildUserToSave(user);
+
+    return this.usersRepository.save(userToSave).then((savedUser) => {
+      this.logger.log(`User ${userToSave.email} saved`);
+      this.userAMQPProducer.emitUserCreatedEvent(savedUser);
+      return savedUser;
+    });
+  }
+
+  private async buildUserToSave(user: UserCreateDto): Promise<User> {
     const userRole = await this.rolesRepository.findByName(AppRole.USER);
     if (!userRole)
       return Promise.reject(new BadRequestException('Role not found'));
-
-    const userToSave: User = {
+    return {
       ...user,
       active: true,
+      verified: false,
       onboardingCompleted: false,
       id: crypto.randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
       roles: [userRole],
-      notifications: [],
       preferences: [],
-      ventures: [],
-      comments: [],
     };
-
-    return this.usersRepository.save(userToSave).then((savedUser) => {
-      this.logger.log(`User ${userToSave.email} saved`);
-      return savedUser;
-    });
   }
 
   public async registerUser(
@@ -143,32 +121,18 @@ export class UsersService {
     detail: UserRegisterCreateDto,
   ): Promise<void> {
     const userDB = await this.usersRepository.findByEmail(email, {
-      comments: false,
-      notifications: false,
       roles: true,
-      ventures: false,
-      detail: false,
-      preferences: false,
     });
     if (!userDB) throw new NotFoundException('User not found');
 
-    this.usersRepository.updateDetail(email, detail);
+    this.usersRepository.registerUser(email, detail);
     this.usersRepository.updatePreferences(email, detail.preferences);
-    this.usersRepository.update({
-      ...userDB,
-      onboardingCompleted: true,
-    });
+    this.usersRepository.setOnboardingCompleted(email);
+    this.userAMQPProducer.emitUserRegisteredEvent(userDB);
   }
 
   public async enableUser(userId: string): Promise<User | null> {
-    const user = await this.usersRepository.findById(userId, {
-      comments: false,
-      notifications: false,
-      roles: false,
-      ventures: false,
-      detail: false,
-      preferences: false,
-    });
+    const user = await this.usersRepository.findById(userId, { roles: true });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -176,36 +140,65 @@ export class UsersService {
       throw new BadRequestException('User is already enabled');
     }
 
-    user.active = true;
-    return this.usersRepository.update(user).then((userDB) => {
+    return this.usersRepository.unlockAccount(user.email).then((userDB) => {
       if (!userDB) {
         throw new BadRequestException('User could not be enabled');
       }
+      this.userAMQPProducer.emitUserEnabledEvent(userDB);
       return userDB;
     });
   }
 
   public async disableUser(userId: string): Promise<User | null> {
-    const user = await this.usersRepository.findById(userId, {
-      comments: false,
-      notifications: false,
-      roles: false,
-      ventures: false,
-      detail: false,
-      preferences: false,
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    if (!user.active) {
-      throw new BadRequestException('User is already disabled');
-    }
+    const user = await this.usersRepository.findById(userId, { roles: true });
+    if (!user) throw new NotFoundException('User not found');
 
-    user.active = false;
-    return this.usersRepository.update(user).then((userDB) => {
+    if (!user.active) throw new BadRequestException('User is already disabled');
+
+    const isAdmin = user.roles.some(({ name }) => name === AppRole.ADMIN);
+    if (isAdmin) throw new ForbiddenException('Admin user cannot be disabled');
+
+    return this.usersRepository.lockAccount(user.email).then((userDB) => {
       if (!userDB) {
         throw new BadRequestException('User could not be disabled');
       }
+      this.userAMQPProducer.emitUserDisabledEvent(userDB);
+      return userDB;
+    });
+  }
+
+  public async verifyUser(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findByEmail(email, {});
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.verified)
+      throw new BadRequestException('User is already verified');
+
+    return this.usersRepository.verifyAccount(user.email).then((userDB) => {
+      if (!userDB) {
+        throw new BadRequestException('User could not be verified');
+      }
+      this.userAMQPProducer.emitUserVerifiedEvent(userDB);
+      return userDB;
+    });
+  }
+
+  public async unverifyUser(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findByEmail(email, { roles: true });
+    if (!user) throw new NotFoundException('User not found');
+    console.log({ USER: user });
+    if (!user.verified)
+      throw new BadRequestException('User is already unverified');
+
+    const isAdmin = user.roles.some(({ name }) => name === AppRole.ADMIN);
+    if (isAdmin)
+      throw new ForbiddenException('Admin user cannot be unverified');
+
+    return this.usersRepository.unverifyAccount(user.email).then((userDB) => {
+      if (!userDB) {
+        throw new BadRequestException('User could not be unverified');
+      }
+      this.userAMQPProducer.emitUserUnverifiedEvent(userDB);
       return userDB;
     });
   }
@@ -230,90 +223,54 @@ export class UsersService {
     // writeFileSync(`${imagePath}`, image.buffer);
   }
 
-  /**
-   * Name is not updatable
-   */
-  public async updateUser(
-    userId: string,
-    // user: UserUpdate,
-  ): Promise<User | null> {
-    return Promise.resolve(null);
-
-    // const usersCache = await this.usersCache.getMany('betting_house_*');
-    // const userToUpdate = usersCache.find(({ id }) => {
-    //   return id === userId;
-    // });
-    // if (!userToUpdate) {
-    //   throw new ConflictException('Betting house does not exists');
-    // }
-    // const userUpdated = {
-    //   ...userToUpdate,
-    //   ...user,
-    // };
-    // return this.usersRepository.update(userUpdated).then((userDB) => {
-    //   if (!userDB) {
-    //     throw new BadRequestException('Betting house could not be updated');
-    //   }
-    //   return this.usersCache
-    //     .set('betting_house_' + userUpdated.fullName.toLowerCase(), userDB)
-    //     .then((userCache) => {
-    //       if (!userCache) {
-    //         throw new BadRequestException('Betting house could not be saved');
-    //       }
-    //       return this.userAMQPProducer
-    //         .emitUserUpdatedEvent(userDB)
-    //         .then(() => userDB);
-    //     });
-    // });
-  }
-
-  public deleteUserById(userId: string): Promise<void> {
-    return Promise.resolve();
-    // return this.usersRepository.deleteById(userId).then((deleted) => {
-    //   if (!deleted) {
-    //     throw new BadRequestException('Betting house could not be deleted');
-    //   }
-    //   const { fullName } = deleted;
-    //   this.deleteUserImage(fullName);
-    //   return this.usersCache
-    //     .delete('betting_house_' + fullName.toLowerCase())
-    //     .then((deleted) => {
-    //       if (!deleted) {
-    //         throw new BadRequestException('Betting house could not be deleted');
-    //       }
-    //       return this.userAMQPProducer.emitUserDeletedEvent(userId).then(() => {
-    //         this.logger.log(`Betting house ${fullName} deleted`);
-    //       });
-    //     });
-    // });
-  }
-
-  private deleteUserImage(userName: string) {
-    // const files = readdirSync(this.BETTING_HOUSES_IMAGES_FOLDER);
-    // console.log({ files });
-    // const fileToDelete = files.find((file) => {
-    //   return file.split('.')[0] === userName;
-    // });
-    // if (fileToDelete) {
-    //   const filePath = `${this.BETTING_HOUSES_IMAGES_FOLDER}/${fileToDelete}`;
-    //   this.logger.log(`Deleting file ${filePath}`);
-    //   rmSync(filePath);
-    // }
+  public deleteUserByEmail(email: string): Promise<void> {
+    return this.usersRepository.deleteByEmail(email);
   }
 
   public getUserPreferences(userId: string) {
     return this.usersRepository
       .findById(userId, {
-        comments: false,
-        notifications: false,
-        roles: false,
-        ventures: false,
-        detail: false,
         preferences: true,
       })
       .then((user) => {
-        if (!user) throw new NotFoundError('User not found');
+        if (!user) throw new NotFoundException('User not found');
         return user.preferences;
       });
+  }
+
+  public getRoles() {
+    return this.rolesRepository.findAll({});
+  }
+
+  public async updateRolesToUser(
+    email: string,
+    roles: AppRole[],
+  ): Promise<void> {
+    const user = await this.usersRepository.findByEmail(email, { roles: true });
+    if (!user) throw new NotFoundException('User not found');
+    if (roles.includes(AppRole.ADMIN) || roles.includes(AppRole.USER))
+      throw new BadRequestException('Admin or user role cannot be added');
+    const baseRoles = user.roles.filter(
+      ({ name }) => name === AppRole.ADMIN || name === AppRole.USER,
+    );
+    const addedRoles = roles.filter(
+      (role) => !user.roles.some(({ name }) => name === role),
+    );
+    const removedRoles = user.roles
+      .map(({ name }) => name)
+      .filter((role) => !baseRoles.some(({ name }) => role === name))
+      .filter((role) => !roles.some((name) => role === name));
+
+    const rolesToAdd = await this.rolesRepository.findManyByName(addedRoles);
+    const rolesToRemove =
+      await this.rolesRepository.findManyByName(removedRoles);
+
+    return Promise.all([
+      this.usersRepository.addUserRoles(email, rolesToAdd),
+      this.usersRepository.removeUserRoles(email, rolesToRemove),
+    ]).then(() => {
+      this.logger.log(`Roles updated for user ${email}`);
+      this.userAMQPProducer.emitUserUpdatedEvent(user);
+    });
   }
 }

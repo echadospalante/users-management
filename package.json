@@ -1,12 +1,12 @@
 {
   "name": "general-users-management",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "general-users-management",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/juancamilo11/general-users-management.git"
   },
-  "author": "Juan Camilo Cardona Calderón",
+  "author": "Juan Camilo Cardona Calderón, Maria Carolina Cardona Calderón",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/juancamilo11/general-users-management/issues"
@@ -40,6 +40,7 @@
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
+    "echadospalante-core": "^8.4.2",
     "helmet": "^7.1.0",
     "joi": "^17.13.3",
     "morgan": "^1.10.0",
@@ -48,8 +49,7 @@
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.5",
     "string-similarity": "^4.0.4",
-    "yup": "^1.4.0",
-    "x-ventures-domain": "file:../x-ventures-domain"
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.2",
@@ -70,7 +70,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "prettier": "^3.3.3",
-    "prisma": "^5.16.2",
+    "prisma": "^5.20.0",
     "source-map-support": "^0.5.21",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",

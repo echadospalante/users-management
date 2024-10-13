@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-// import { BasicType, ComplexInclude, Pagination, User } from 'x-ventures-domain';
-
-import { BasicType, ComplexInclude, Pagination, User } from 'x-ventures-domain';
+import { ComplexInclude, Pagination, Role, User } from 'echadospalante-core';
 
 import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
+import { UserFilters } from '../../domain/core/user-filters';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
 import UserRegisterCreateDto from '../web/v1/model/request/user-preferences-create.dto';
 
@@ -20,26 +19,12 @@ export class UsersRepositoryImpl implements UsersRepository {
           roles: {
             connect: user.roles.map((role) => ({ id: role.id })),
           },
-          notifications: {
-            connect: user.notifications.map((notification) => ({
-              id: notification.id,
-            })),
-          },
-          comments: {
-            connect: user.comments.map((comment) => ({
-              id: comment.id,
-            })),
-          },
-          ventures: {
-            connect: user.ventures.map((venture) => ({
-              id: venture.id,
-            })),
-          },
           preferences: {
             connect: user.preferences.map((preference) => ({
               id: preference.id,
             })),
           },
+          contact: undefined,
           detail: undefined,
         },
       })
@@ -60,17 +45,81 @@ export class UsersRepositoryImpl implements UsersRepository {
       .then((user) => user as User | null);
   }
 
-  public countByCriteria(filter: Partial<BasicType<User>>): Promise<number> {
-    return 0;
+  public async countByCriteria(filters: UserFilters): Promise<number> {
+    const { gender, role, search } = filters;
+    return this.prismaClient.client.user.count({
+      where: {
+        AND: {
+          OR: [
+            {
+              email: {
+                contains: search,
+              },
+            },
+            {
+              firstName: {
+                contains: search,
+              },
+            },
+            {
+              lastName: {
+                contains: search,
+              },
+            },
+          ],
+
+          detail: {
+            gender,
+          },
+          roles: {
+            some: {
+              name: role,
+            },
+          },
+        },
+      },
+    });
   }
 
   public findAllByCriteria(
-    filter: Partial<User>,
+    filters: UserFilters,
     include: ComplexInclude<User>,
     pagination?: Pagination,
   ): Promise<User[]> {
+    const { gender, role, search } = filters;
+    console.log({ filters });
     return this.prismaClient.client.user
       .findMany({
+        where: {
+          AND: {
+            OR: [
+              {
+                email: {
+                  contains: search,
+                },
+              },
+              {
+                firstName: {
+                  contains: search,
+                },
+              },
+              {
+                lastName: {
+                  contains: search,
+                },
+              },
+            ],
+
+            detail: {
+              gender,
+            },
+            roles: {
+              some: {
+                name: role,
+              },
+            },
+          },
+        },
         include,
         skip: pagination?.skip,
         take: pagination?.take,
@@ -78,8 +127,14 @@ export class UsersRepositoryImpl implements UsersRepository {
       .then((users) => users as unknown as User[]);
   }
 
-  public deleteById(id: string): Promise<User | null> {
-    return Promise.resolve(null);
+  public deleteByEmail(email: string): Promise<void> {
+    return this.prismaClient.client.user
+      .delete({
+        where: { email },
+      })
+      .then(() => {
+        console.log('User deleted');
+      });
   }
 
   public findById(
@@ -96,87 +151,168 @@ export class UsersRepositoryImpl implements UsersRepository {
       .then((user) => user as User | null);
   }
 
-  findAll(
+  public findAll(
     include: ComplexInclude<User>,
     pagination?: Pagination,
   ): Promise<User[]> {
-    return Promise.resolve([]);
+    return this.prismaClient.client.user
+      .findMany({
+        include,
+        skip: pagination?.skip,
+        take: pagination?.take,
+      })
+      .then((users) => users as unknown as User[]);
   }
 
-  update(user: User): Promise<User | null> {
-    return Promise.resolve(null);
+  public lockAccount(email: string): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          active: false,
+        },
+      })
+      .then((user) => {
+        console.log('User locked');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
   }
 
-  //   public countByCriteria(filter: Partial<BasicType<User>>): Promise<number> {
-  //     return this.prismaClient.client.user.count({
-  //       where: { ...filter },
-  //     });
-  //   }
+  public unlockAccount(email: string): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          active: true,
+        },
+      })
+      .then((user) => {
+        console.log('User unlocked');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  }
 
-  //   public async findAllByCriteria(
-  //     filter: Partial<BasicType<User>>,
-  //     include: ComplexInclude<User>,
-  //     pagination?: Pagination,
-  //   ): Promise<User[]> {
-  //     return Promise.resolve([]);
-  //   }
+  public verifyAccount(email: string): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          verified: true,
+        },
+      })
+      .then((user) => {
+        console.log('User verified');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  }
 
-  //   public async save(user: User, countriesIds: number[]): Promise<User> {
-  //     console.log({ user });
-  //     return Promise.resolve(user);
-  //   }
+  public unverifyAccount(email: string): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          verified: false,
+        },
+      })
+      .then((user) => {
+        console.log('User unverified');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  }
 
-  //   public async update(user: User): Promise<User | null> {
-  //     return null;
-  //   }
+  public addUserRoles(email: string, roles: Role[]): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          roles: {
+            connect: roles.map((role) => ({
+              id: role.id,
+            })),
+          },
+        },
+      })
+      .then((user) => {
+        console.log('User roles updated successfully');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  }
 
-  //   public async findById(
-  //     id: string,
-  //     // include: UserInclude,
-  //   ): Promise<User | null> {
-  //     // return this.prismaClient.client.user
-  //     //   .findUnique({
-  //     //     where: {
-  //     //       id,
-  //     //     },
-  //     //     include,
-  //     //   })
-  //     //   .then((user) => user as User | null);
-  //     return Promise.resolve(null);
-  //   }
+  public removeUserRoles(email: string, roles: Role[]): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          roles: {
+            disconnect: roles.map((role) => ({
+              id: role.id,
+            })),
+          },
+        },
+      })
+      .then((user) => {
+        console.log('User roles updated successfully');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  }
 
-  //   public findAll(
-  //     // // include: UserInclude,
-  //     pagination?: Pagination,
-  //   ): Promise<User[]> {
-  //     // if (!pagination) {
-  //     //   return this.prismaClient.client.user
-  //     //     .findMany({
-  //     //       include,
-  //     //     })
-  //     //     .then((users) => users as User[]);
-  //     // }
-  //     // const { skip, take } = pagination;
-  //     // return this.prismaClient.client.user
-  //     //   .findMany({
-  //     //     include,
-  //     //     skip,
-  //     //     take,
-  //     //   })
-  //     //   .then((users) => users as User[]);
-  //     return Promise.resolve([]);
-  //   }
+  public setOnboardingCompleted(email: string): Promise<User | null> {
+    return this.prismaClient.client.user
+      .update({
+        where: {
+          email,
+        },
+        data: {
+          onboardingCompleted: true,
+        },
+      })
+      .then((user) => {
+        console.log('User onboarding completed');
+        return user as unknown as User;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
+  }
 
-  //   public async deleteById(id: string): Promise<User | null> {
-  //     // return this.prismaClient.client.user.delete({
-  //     //   where: {
-  //     //     id,
-  //     //   },
-  //     // });
-  //     return null;
-  //   }
-
-  public updateDetail(
+  public registerUser(
     email: string,
     detail: UserRegisterCreateDto,
   ): Promise<void> {

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { Channel } from 'amqplib';
-import { User } from 'x-ventures-domain';
+import { User } from 'echadospalante-core';
 
 import { RabbitMQConfig } from '../../../../../config/amqp/amqp.connection';
 import { UserAMQPProducer } from '../../../domain/gateway/amqp/user.amqp';
@@ -33,57 +33,67 @@ export class UserAMQPProducerImpl implements UserAMQPProducer {
     return [
       {
         queue: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_CREATED_QUEUE',
+          'RABBIT_USER_CREATED_QUEUE',
         ),
-        rk: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_CREATED_RK',
-        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_CREATED_RK'),
       },
       {
         queue: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_UPDATED_QUEUE',
+          'RABBIT_USER_UPDATED_QUEUE',
         ),
-        rk: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_UPDATED_RK',
-        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_UPDATED_RK'),
       },
       {
         queue: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_ENABLED_QUEUE',
+          'RABBIT_USER_ENABLED_QUEUE',
         ),
-        rk: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_ENABLED_RK',
-        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_ENABLED_RK'),
       },
       {
         queue: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_DISABLED_QUEUE',
+          'RABBIT_USER_DISABLED_QUEUE',
         ),
-        rk: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_DISABLED_RK',
-        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_DISABLED_RK'),
       },
       {
         queue: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_DELETED_QUEUE',
+          'RABBIT_USER_DELETED_QUEUE',
         ),
-        rk: this.configService.getOrThrow<string>(
-          'RABBIT_BETTING_HOUSE_DELETED_RK',
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_DELETED_RK'),
+      },
+      {
+        queue: this.configService.getOrThrow<string>(
+          'RABBIT_USER_REGISTERED_QUEUE',
         ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_REGISTERED_RK'),
+      },
+      {
+        queue: this.configService.getOrThrow<string>(
+          'RABBIT_USER_VERIFIED_QUEUE',
+        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_VERIFIED_RK'),
+      },
+      {
+        queue: this.configService.getOrThrow<string>(
+          'RABBIT_USER_UNVERIFIED_QUEUE',
+        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_UNVERIFIED_RK'),
+      },
+      {
+        queue: this.configService.getOrThrow<string>(
+          'RABBIT_USER_LOGGED_QUEUE',
+        ),
+        rk: this.configService.getOrThrow<string>('RABBIT_USER_LOGGED_RK'),
       },
     ];
   }
 
   private get usersExchange() {
-    return this.configService.getOrThrow<string>(
-      'RABBIT_BETTING_HOUSES_EXCHANGE',
-    );
+    return this.configService.getOrThrow<string>('RABBIT_USERS_EXCHANGE');
   }
 
   private get usersExchangeType() {
-    return this.configService.getOrThrow<string>(
-      'RABBIT_BETTING_HOUSES_EXCHANGE_TYPE',
-    );
+    return this.configService.getOrThrow<string>('RABBIT_USERS_EXCHANGE_TYPE');
   }
 
   private sendMessageToQueue<T>(
@@ -146,36 +156,64 @@ export class UserAMQPProducerImpl implements UserAMQPProducer {
 
   public emitUserCreatedEvent(user: User) {
     return this.sendMessageToQueue(
-      this.configService.getOrThrow<string>('RABBIT_BETTING_HOUSE_CREATED_RK'),
+      this.configService.getOrThrow<string>('RABBIT_USER_CREATED_RK'),
       user,
     );
   }
 
   public emitUserUpdatedEvent(user: User) {
     return this.sendMessageToQueue(
-      this.configService.getOrThrow<string>('RABBIT_BETTING_HOUSE_UPDATED_RK'),
+      this.configService.getOrThrow<string>('RABBIT_USER_UPDATED_RK'),
       user,
     );
   }
 
   public emitUserEnabledEvent(user: User) {
     return this.sendMessageToQueue(
-      this.configService.getOrThrow<string>('RABBIT_BETTING_HOUSE_ENABLED_RK'),
+      this.configService.getOrThrow<string>('RABBIT_USER_ENABLED_RK'),
       user,
     );
   }
 
   public emitUserDisabledEvent(user: User) {
     return this.sendMessageToQueue(
-      this.configService.getOrThrow<string>('RABBIT_BETTING_HOUSE_DISABLED_RK'),
+      this.configService.getOrThrow<string>('RABBIT_USER_DISABLED_RK'),
       user,
     );
   }
 
-  public emitUserDeletedEvent(userId: string) {
+  public emitUserDeletedEvent(user: User) {
     return this.sendMessageToQueue(
-      this.configService.getOrThrow<string>('RABBIT_BETTING_HOUSE_DELETED_RK'),
-      userId,
+      this.configService.getOrThrow<string>('RABBIT_USER_DELETED_RK'),
+      user,
+    );
+  }
+
+  public emitUserLoggedEvent(user: User) {
+    return this.sendMessageToQueue(
+      this.configService.getOrThrow<string>('RABBIT_USER_LOGGED_RK'),
+      user,
+    );
+  }
+
+  public emitUserRegisteredEvent(user: User) {
+    return this.sendMessageToQueue(
+      this.configService.getOrThrow<string>('RABBIT_USER_REGISTERED_RK'),
+      user,
+    );
+  }
+
+  public emitUserVerifiedEvent(user: User) {
+    return this.sendMessageToQueue(
+      this.configService.getOrThrow<string>('RABBIT_USER_VERIFIED_RK'),
+      user,
+    );
+  }
+
+  public emitUserUnverifiedEvent(user: User) {
+    return this.sendMessageToQueue(
+      this.configService.getOrThrow<string>('RABBIT_USER_UNVERIFIED_RK'),
+      user,
     );
   }
 }

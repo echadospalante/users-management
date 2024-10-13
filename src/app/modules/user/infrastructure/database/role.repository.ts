@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { AppRole, ComplexType, Role } from 'x-ventures-domain';
+import { AppRole, ComplexType, Role } from 'echadospalante-core';
 
 import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
 import { RolesRepository } from '../../domain/gateway/database/roles.repository';
@@ -20,6 +20,18 @@ export class RolesRepositoryImpl implements RolesRepository {
   public findAll(include: ComplexType<Role>): Promise<Role[]> {
     return this.prismaClient.client.role
       .findMany({ include })
+      .then((roles) => roles as Role[]);
+  }
+
+  public findManyByName(roles: AppRole[]): Promise<Role[]> {
+    return this.prismaClient.client.role
+      .findMany({
+        where: {
+          name: {
+            in: roles,
+          },
+        },
+      })
       .then((roles) => roles as Role[]);
   }
 }
