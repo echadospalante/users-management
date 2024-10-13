@@ -12,14 +12,19 @@ import { UserAMQPProducerImpl } from './infrastructure/amqp/producers/user.amqp'
 import { RolesRepositoryImpl } from './infrastructure/database/role.repository';
 import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
 import { UsersController } from './infrastructure/web/v1/user.controller';
+import { UsersContactService } from './domain/service/users-contact.service';
+import { UserContactRepository } from './domain/gateway/database/user-contact.repository';
+import { UserContactRepositoryImpl } from './infrastructure/database/user-contact.repository';
+import { UsersContactController } from './infrastructure/web/v1/user-contact.controller';
 
 @Module({
-  controllers: [UsersController],
+  controllers: [UsersController, UsersContactController],
   providers: [
     PrismaConfig,
     RabbitMQConfig,
     CreateUserInterceptor,
     UsersService,
+    UsersContactService,
     {
       provide: UsersRepository,
       useClass: UsersRepositoryImpl,
@@ -27,6 +32,10 @@ import { UsersController } from './infrastructure/web/v1/user.controller';
     {
       provide: RolesRepository,
       useClass: RolesRepositoryImpl,
+    },
+    {
+      provide: UserContactRepository,
+      useClass: UserContactRepositoryImpl,
     },
     {
       provide: UserAMQPProducer,

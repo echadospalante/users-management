@@ -59,10 +59,7 @@ export default class UsersQueryDto {
 
   static parseQuery(query: UsersQueryDto) {
     const include: ComplexInclude<User> = {
-      notifications: !!query.includeNotifications,
       roles: !!query.includeRoles,
-      ventures: !!query.includeVentures,
-      comments: !!query.includeComments,
       preferences: !!query.includePreferences,
       detail: !!query.includeDetail,
     };

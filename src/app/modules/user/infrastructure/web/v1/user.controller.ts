@@ -25,7 +25,7 @@ export class UsersController {
     console.log({ filters });
     const [items, total] = await Promise.all([
       this.usersService.getUsers(filters, include, pagination),
-      0,
+      this.usersService.countUsers(filters),
     ]);
     return { items, total };
   }
