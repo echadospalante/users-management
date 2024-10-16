@@ -219,12 +219,12 @@ model XVentureVencureCategory {
 }
 
 model VentureCategory {
+  id                      String                    @id
   name                    String
   slug                    String                    @unique
   description             String
   createdAt               DateTime                  @default(now())
   updatedAt               DateTime                  @default(now()) @updatedAt
-  id                      String                    @id
   XUserPreferences        XUserPreferences[]
   XVentureVencureCategory XVentureVencureCategory[]
   users                   User[]                    @relation("XUserPreferences")
