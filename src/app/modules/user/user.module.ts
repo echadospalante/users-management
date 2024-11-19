@@ -11,7 +11,7 @@ import { UsersService } from './domain/service/users.service';
 import { UserAMQPProducerImpl } from './infrastructure/amqp/producers/user.amqp';
 import { RolesRepositoryImpl } from './infrastructure/database/role.repository';
 import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
-import { UsersController } from './infrastructure/web/v1/user.controller';
+import { UsersController } from './infrastructure/web/v1/users.controller';
 import { UsersContactService } from './domain/service/users-contact.service';
 import { UserContactRepository } from './domain/gateway/database/user-contact.repository';
 import { UserContactRepositoryImpl } from './infrastructure/database/user-contact.repository';

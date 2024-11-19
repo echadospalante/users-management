@@ -9,6 +9,7 @@ import UserCreateDto from './model/request/user-create.dto';
 import UserRegisterCreateDto from './model/request/user-preferences-create.dto';
 import UsersQueryDto from './model/request/users-query.dto';
 import UserRolesUpdateDto from './model/request/user-roles-update.dto';
+import UserQueryDto from './model/request/user-query.dto';
 
 const path = '/users';
 
@@ -90,7 +91,7 @@ export class UsersController {
     });
   }
 
-  @Http.Delete(':id')
+  @Http.Delete(':email')
   @Http.HttpCode(Http.HttpStatus.NO_CONTENT)
   public deleteUser(@Http.Param('email') email: string): Promise<void> {
     return this.usersService.deleteUserByEmail(email);
@@ -113,7 +114,11 @@ export class UsersController {
 
   @Http.Get('/:email')
   @Http.HttpCode(Http.HttpStatus.OK)
-  public getUserByEmail(@Http.Param('email') email: string): Promise<User> {
-    return this.usersService.getUserByEmail(email);
+  public getUserByEmail(
+    @Http.Param('email') email: string,
+    @Http.Query() query: UserQueryDto,
+  ): Promise<User> {
+    const { include } = UserQueryDto.parseQuery(query);
+    return this.usersService.getUserByEmail(email, include);
   }
 }

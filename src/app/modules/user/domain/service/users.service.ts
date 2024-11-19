@@ -63,12 +63,12 @@ export class UsersService {
     return user;
   }
 
-  public async getUserByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findByEmail(email, {
-      roles: true,
-      detail: false,
-      preferences: false,
-    });
+  public async getUserByEmail(
+    email: string,
+    include: ComplexInclude<User>,
+  ): Promise<User> {
+    const user = await this.usersRepository.findByEmail(email, include);
+    console.log({ user });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }

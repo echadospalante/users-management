@@ -282,12 +282,12 @@ exports.Prisma.XVentureVencureCategoryScalarFieldEnum = {
 };
 
 exports.Prisma.VentureCategoryScalarFieldEnum = {
+  id: 'id',
   name: 'name',
   slug: 'slug',
   description: 'description',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  id: 'id'
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.VentureDetailScalarFieldEnum = {
