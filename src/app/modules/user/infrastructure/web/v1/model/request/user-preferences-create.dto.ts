@@ -15,5 +15,5 @@ export default class UserRegisterCreateDto {
   public municipalityId: number;
 
   @Validate.IsArray()
-  public preferences: string[];
+  public preferencesIds: string[];
 }

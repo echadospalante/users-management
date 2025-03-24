@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
-import { AppRole, Pagination, User } from 'echadospalante-core';
+import { AppRole, Pagination, User, UserDetail } from 'echadospalante-core';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   RoleData,
   UserData,
+  UserDetailData,
 } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
@@ -20,6 +21,8 @@ export class UsersRepositoryImpl implements UsersRepository {
     private readonly userRepository: Repository<UserData>,
     @InjectRepository(RoleData)
     private readonly roleRepository: Repository<RoleData>,
+    @InjectRepository(UserDetailData)
+    private readonly userDetailRepository: Repository<UserDetailData>,
   ) {}
 
   public updatePreferences(
@@ -29,11 +32,23 @@ export class UsersRepositoryImpl implements UsersRepository {
     throw new Error('Method not implemented.');
   }
 
-  public registerUser(
-    userId: string,
+  public saveDetail(
+    id: string,
     detail: UserRegisterCreateDto,
-  ): Promise<void> {
-    return Promise.resolve(undefined);
+  ): Promise<UserDetail | null> {
+    const userDetail = this.userDetailRepository.create({
+      ...detail,
+    });
+    const res = this.userRepository.findOne({ where: { id } }).then((user) => {
+      if (!user) {
+        return null;
+      }
+      user.detail = userDetail;
+      return this.userRepository
+        .save(user)
+        .then(({ detail }) => detail || null);
+    });
+    return res;
   }
 
   public findByEmail(email: string): Promise<User | null> {
@@ -41,12 +56,12 @@ export class UsersRepositoryImpl implements UsersRepository {
       this.userRepository
         .findOne({ where: { email } })
         // TODO: Fix this
-        .then((user) => user as unknown as User | null)
+        .then((user) => user as User | null)
     );
   }
 
   public countByCriteria(filters: UserFilters): Promise<number> {
-    const { search, gender, role } = filters;
+    const { search, role } = filters;
 
     const query = this.userRepository.createQueryBuilder('user');
 
@@ -56,9 +71,7 @@ export class UsersRepositoryImpl implements UsersRepository {
         { term: `%${search}%` },
       );
     }
-    if (gender) {
-      query.andWhere('user.detail.gender = :gender', { gender });
-    }
+
     if (role) {
       query
         .innerJoin('user.roles', 'role')
@@ -71,7 +84,7 @@ export class UsersRepositoryImpl implements UsersRepository {
     filters: UserFilters,
     pagination?: Pagination,
   ): Promise<User[]> {
-    const { search, gender, role } = filters;
+    const { search, role } = filters;
 
     const query = this.userRepository.createQueryBuilder('user');
 
@@ -83,11 +96,6 @@ export class UsersRepositoryImpl implements UsersRepository {
       );
     }
 
-    // Filtro por género si está definido
-    if (gender) {
-      query.andWhere('user.gender = :gender', { gender });
-    }
-
     // Filtro por rol si está definido
     if (role) {
       query
@@ -95,10 +103,11 @@ export class UsersRepositoryImpl implements UsersRepository {
         .andWhere('role.name = :role', { role });
     }
 
-    // Aplicar paginación si está definida
     if (pagination) {
       query.skip(pagination.skip).take(pagination.take);
     }
+
+    // console.log({ sql: query.getSql(), params: query.getParameters() });
 
     return (
       query
@@ -108,7 +117,7 @@ export class UsersRepositoryImpl implements UsersRepository {
     );
   }
 
-  public deleteByEmail(id: string): Promise<void> {
+  public deleteById(id: string): Promise<void> {
     return this.userRepository.delete(id).then(() => undefined);
   }
 
@@ -117,7 +126,7 @@ export class UsersRepositoryImpl implements UsersRepository {
       this.userRepository
         .findOne({ where: { id } })
         // TODO: Fix this
-        .then((user) => user as unknown as User | null)
+        .then((user) => user as User | null)
     );
   }
 
@@ -126,7 +135,7 @@ export class UsersRepositoryImpl implements UsersRepository {
       this.userRepository
         .save(user)
         // TODO: Fix this
-        .then((user) => user as unknown as User)
+        .then((user) => user as User)
     );
   }
 
@@ -137,14 +146,14 @@ export class UsersRepositoryImpl implements UsersRepository {
         this.userRepository
           .find({ skip, take })
           // TODO: Fix this
-          .then((users) => users.map((user) => user as unknown as User))
+          .then((users) => users.map((user) => user as User))
       );
     }
     return (
       this.userRepository
         .find()
         // TODO: Fix this
-        .then((users) => users.map((user) => user as unknown as User))
+        .then((users) => users.map((user) => user as User))
     );
   }
 
@@ -156,7 +165,7 @@ export class UsersRepositoryImpl implements UsersRepository {
         this.userRepository
           .save(user)
           // TODO: Fix this
-          .then((user) => user as unknown as User)
+          .then((user) => user as User)
       );
     }
     return null;
@@ -166,12 +175,7 @@ export class UsersRepositoryImpl implements UsersRepository {
     const user = await this.userRepository.findOneBy({ email });
     if (user) {
       user.active = true;
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as unknown as User)
-      );
+      return this.userRepository.save(user).then((user) => user as User);
     }
     return null;
   }
@@ -184,7 +188,7 @@ export class UsersRepositoryImpl implements UsersRepository {
         this.userRepository
           .save(user)
           // TODO: Fix this
-          .then((user) => user as unknown as User)
+          .then((user) => user as User)
       );
     }
     return null;
@@ -194,26 +198,16 @@ export class UsersRepositoryImpl implements UsersRepository {
     const user = await this.userRepository.findOneBy({ email });
     if (user) {
       user.verified = false;
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as unknown as User)
-      );
+      return this.userRepository.save(user).then((user) => user as User);
     }
     return null;
   }
 
-  public async setOnboardingCompleted(email: string): Promise<User | null> {
-    const user = await this.userRepository.findOneBy({ email });
+  public async setOnboardingCompleted(id: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ id });
     if (user) {
-      user.onboardingCompleted = false;
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as unknown as User)
-      );
+      user.onboardingCompleted = true;
+      return this.userRepository.save(user).then((user) => user as User);
     }
     return null;
   }
@@ -234,7 +228,7 @@ export class UsersRepositoryImpl implements UsersRepository {
         this.userRepository
           .save(user)
           // TODO: Fix this
-          .then((user) => user as unknown as User | null)
+          .then((user) => user as User | null)
       );
     });
   }
@@ -252,7 +246,7 @@ export class UsersRepositoryImpl implements UsersRepository {
         this.userRepository
           .save(user)
           // TODO: Fix this
-          .then((user) => user as unknown as User | null)
+          .then((user) => user as User | null)
       );
     });
   }

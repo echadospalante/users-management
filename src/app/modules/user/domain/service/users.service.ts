@@ -5,9 +5,10 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 
-import { AppRole, ComplexInclude, Pagination, User } from 'echadospalante-core';
+import { AppRole, Pagination, User } from 'echadospalante-core';
 
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';
@@ -41,7 +42,6 @@ export class UsersService {
 
   public getUsers(
     filters: UserFilters,
-    include: ComplexInclude<User>,
     pagination: Pagination,
   ): Promise<User[]> {
     return this.usersRepository.findAllByCriteria(filters, pagination);
@@ -49,13 +49,6 @@ export class UsersService {
 
   public async getUserById(userId: string): Promise<User> {
     const user = await this.usersRepository.findById(userId);
-    if (!user) throw new NotFoundException('User not found');
-    return user;
-  }
-
-  public async getUserByEmail(email: string): Promise<User> {
-    const user = await this.usersRepository.findByEmail(email);
-    console.log({ user });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
@@ -101,17 +94,22 @@ export class UsersService {
     };
   }
 
-  public async registerUser(
-    email: string,
+  public async saveDetail(
+    id: string,
     detail: UserRegisterCreateDto,
   ): Promise<void> {
-    const userDB = await this.usersRepository.findByEmail(email);
+    const userDB = await this.usersRepository.findById(id);
     if (!userDB) throw new NotFoundException('User not found');
 
-    this.usersRepository.registerUser(email, detail);
-    this.usersRepository.updatePreferences(email, detail.preferences);
-    this.usersRepository.setOnboardingCompleted(email);
-    this.userAMQPProducer.emitUserRegisteredEvent(userDB);
+    return Promise.all([
+      this.usersRepository.saveDetail(id, detail),
+      this.usersRepository.updatePreferences(id, detail.preferencesIds),
+      this.usersRepository.setOnboardingCompleted(id),
+    ])
+      .then(() => this.userAMQPProducer.emitUserRegisteredEvent(userDB))
+      .then(() => {
+        this.logger.log(`User ${userDB.email} registered`);
+      });
   }
 
   public async enableUser(userId: string): Promise<User | null> {
@@ -120,7 +118,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     if (user.active) {
-      throw new BadRequestException('User is already enabled');
+      throw new UnprocessableEntityException('User is already enabled');
     }
 
     return this.usersRepository.unlockAccount(user.email).then((userDB) => {
@@ -136,7 +134,8 @@ export class UsersService {
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotFoundException('User not found');
 
-    if (!user.active) throw new BadRequestException('User is already disabled');
+    if (!user.active)
+      throw new UnprocessableEntityException('User is already disabled');
 
     const isAdmin = user.roles.some(({ name }) => name === AppRole.ADMIN);
     if (isAdmin) throw new ForbiddenException('Admin user cannot be disabled');
@@ -150,8 +149,8 @@ export class UsersService {
     });
   }
 
-  public async verifyUser(email: string): Promise<User | null> {
-    const user = await this.usersRepository.findByEmail(email);
+  public async verifyUser(id: string): Promise<User | null> {
+    const user = await this.usersRepository.findById(id);
     if (!user) throw new NotFoundException('User not found');
 
     if (user.verified)
@@ -166,10 +165,10 @@ export class UsersService {
     });
   }
 
-  public async unVerifyUser(email: string): Promise<User | null> {
-    const user = await this.usersRepository.findByEmail(email);
+  public async unVerifyUser(id: string): Promise<User | null> {
+    const user = await this.usersRepository.findById(id);
     if (!user) throw new NotFoundException('User not found');
-    console.log({ USER: user });
+
     if (!user.verified)
       throw new BadRequestException('User is already unverified');
 
@@ -206,8 +205,8 @@ export class UsersService {
     // writeFileSync(`${imagePath}`, image.buffer);
   }
 
-  public deleteUserByEmail(email: string): Promise<void> {
-    return this.usersRepository.deleteByEmail(email);
+  public deleteById(email: string): Promise<void> {
+    return this.usersRepository.deleteById(email);
   }
 
   public getUserPreferences(userId: string) {

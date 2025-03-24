@@ -5,14 +5,14 @@ import { UserFilters } from '../../core/user-filters';
 
 export interface UsersRepository {
   updatePreferences(userId: string, preferences: string[]): Promise<void>;
-  registerUser(userId: string, detail: UserRegisterCreateDto): Promise<void>;
+  saveDetail(userId: string, detail: UserRegisterCreateDto): Promise<void>;
   findByEmail(email: string): Promise<User | null>;
   countByCriteria(filters: UserFilters): Promise<number>;
   findAllByCriteria(
     filters: UserFilters,
     pagination?: Pagination,
   ): Promise<User[]>;
-  deleteByEmail(id: string): Promise<void>;
+  deleteById(id: string): Promise<void>;
   findById(id: string): Promise<User | null>;
   save(user: User): Promise<User>;
   findAll(pagination?: Pagination): Promise<User[]>;

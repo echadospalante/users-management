@@ -7,8 +7,8 @@ import { User } from 'echadospalante-core';
 import { UsersService } from '../../../domain/service/users.service';
 import UserCreateDto from './model/request/user-create.dto';
 import UserRegisterCreateDto from './model/request/user-preferences-create.dto';
-import UsersQueryDto from './model/request/users-query.dto';
 import UserRolesUpdateDto from './model/request/user-roles-update.dto';
+import UsersQueryDto from './model/request/users-query.dto';
 
 const path = '/users';
 
@@ -18,13 +18,19 @@ export class UsersController {
 
   public constructor(private readonly usersService: UsersService) {}
 
+  @Http.Post()
+  @Http.HttpCode(Http.HttpStatus.CREATED)
+  public createUser(@Http.Body() userCreateDto: UserCreateDto): Promise<User> {
+    this.logger.log('Creating user with email ' + userCreateDto.email);
+    return this.usersService.saveUser(userCreateDto);
+  }
+
   @Http.Get()
   @Http.HttpCode(Http.HttpStatus.OK)
   public async getAllUsers(@Http.Query() query: UsersQueryDto) {
-    const { include, pagination, filters } = UsersQueryDto.parseQuery(query);
-    console.log({ filters });
+    const { pagination, filters } = UsersQueryDto.parseQuery(query);
     const [items, total] = await Promise.all([
-      this.usersService.getUsers(filters, include, pagination),
+      this.usersService.getUsers(filters, pagination),
       this.usersService.countUsers(filters),
     ]);
     return { items, total };
@@ -36,37 +42,32 @@ export class UsersController {
     return this.usersService.getRoles();
   }
 
-  @Http.Post()
-  @Http.HttpCode(Http.HttpStatus.CREATED)
-  public createUser(@Http.Body() userCreateDto: UserCreateDto): Promise<User> {
-    this.logger.log(userCreateDto);
-    return this.usersService.saveUser(userCreateDto);
+  @Http.Put('/enable/:id')
+  @Http.HttpCode(Http.HttpStatus.ACCEPTED)
+  public enableUser(@Http.Param('id') id: string): Promise<User | null> {
+    this.logger.log('Enabling user with id ' + id);
+    return this.usersService.enableUser(id);
   }
 
-  @Http.Put('/enable/:email')
+  @Http.Put('/disable/:id')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public enableUser(@Http.Param('email') email: string): Promise<User | null> {
-    return this.usersService.enableUser(email);
+  public disableUser(@Http.Param('id') id: string): Promise<User | null> {
+    this.logger.log('Disabling user with id ' + id);
+    return this.usersService.disableUser(id);
   }
 
-  @Http.Put('/disable/:email')
+  @Http.Put('/verify/:id')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public disableUser(@Http.Param('email') email: string): Promise<User | null> {
-    return this.usersService.disableUser(email);
+  public verifyUser(@Http.Param('id') id: string): Promise<User | null> {
+    this.logger.log('Verifying user with id ' + id);
+    return this.usersService.verifyUser(id);
   }
 
-  @Http.Put('/verify/:email')
+  @Http.Put('/un-verify/:id')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public verifyUser(@Http.Param('email') email: string): Promise<User | null> {
-    return this.usersService.verifyUser(email);
-  }
-
-  @Http.Put('/unverify/:email')
-  @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public unverifyUser(
-    @Http.Param('email') email: string,
-  ): Promise<User | null> {
-    return this.usersService.unVerifyUser(email);
+  public unVerifyUser(@Http.Param('id') id: string): Promise<User | null> {
+    this.logger.log('Undoing verification user with id ' + id);
+    return this.usersService.unVerifyUser(id);
   }
 
   @Http.Put('/roles')
@@ -89,19 +90,19 @@ export class UsersController {
     });
   }
 
-  @Http.Delete(':email')
+  @Http.Delete(':id')
   @Http.HttpCode(Http.HttpStatus.NO_CONTENT)
-  public deleteUser(@Http.Param('email') email: string): Promise<void> {
-    return this.usersService.deleteUserByEmail(email);
+  public deleteUser(@Http.Param('id') id: string): Promise<void> {
+    return this.usersService.deleteById(id);
   }
 
-  @Http.Post('/register/:email')
+  @Http.Post('/onboarding/:id')
   @Http.HttpCode(Http.HttpStatus.CREATED)
-  public registerUser(
-    @Http.Param('email') email: string,
+  public saveDetail(
+    @Http.Param('id') id: string,
     @Http.Body() preferences: UserRegisterCreateDto,
   ): Promise<void> {
-    return this.usersService.registerUser(email, preferences);
+    return this.usersService.saveDetail(id, preferences);
   }
 
   @Http.Get('/preferences/:id')
@@ -110,9 +111,9 @@ export class UsersController {
     return this.usersService.getUserPreferences(userId);
   }
 
-  @Http.Get('/:email')
+  @Http.Get('/:id')
   @Http.HttpCode(Http.HttpStatus.OK)
-  public getUserByEmail(@Http.Param('email') email: string): Promise<User> {
-    return this.usersService.getUserByEmail(email);
+  public getUserById(@Http.Param('id') id: string): Promise<User> {
+    return this.usersService.getUserById(id);
   }
 }
