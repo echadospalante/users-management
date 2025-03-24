@@ -16,6 +16,8 @@ import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { RolesRepository } from '../gateway/database/roles.repository';
 import { UsersRepository } from '../gateway/database/users.repository';
+import { UserPreferencesRepository } from '../gateway/database/user-preferences.repository';
+import { UserDetailRepository } from '../gateway/database/user-detail.repository';
 
 // export class LoginResponse {
 //   firstName: string;
@@ -34,6 +36,10 @@ export class UsersService {
   public constructor(
     @Inject(UsersRepository)
     private usersRepository: UsersRepository,
+    @Inject(UserPreferencesRepository)
+    private userPreferencesRepository: UserPreferencesRepository,
+    @Inject(UserDetailRepository)
+    private userDetailRepository: UserDetailRepository,
     @Inject(RolesRepository)
     private rolesRepository: RolesRepository,
     @Inject(UserAMQPProducer)
@@ -101,15 +107,17 @@ export class UsersService {
     const userDB = await this.usersRepository.findById(id);
     if (!userDB) throw new NotFoundException('User not found');
 
-    return Promise.all([
-      this.usersRepository.saveDetail(id, detail),
-      this.usersRepository.updatePreferences(id, detail.preferencesIds),
-      this.usersRepository.setOnboardingCompleted(id),
-    ])
-      .then(() => this.userAMQPProducer.emitUserRegisteredEvent(userDB))
+    return this.userDetailRepository
+      .updateDetail(id, detail)
       .then(() => {
-        this.logger.log(`User ${userDB.email} registered`);
-      });
+        return this.userPreferencesRepository.updatePreferences(
+          id,
+          detail.preferencesIds,
+        );
+      })
+      .then(() => this.usersRepository.setOnboardingCompleted(id))
+      .then(() => this.userAMQPProducer.emitUserRegisteredEvent(userDB))
+      .then(() => this.logger.log(`User ${userDB.email} registered`));
   }
 
   public async enableUser(userId: string): Promise<User | null> {

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-
-import { AppRole, Pagination, User, UserDetail } from 'echadospalante-core';
-
 import { InjectRepository } from '@nestjs/typeorm';
+
+import { AppRole, Pagination, User } from 'echadospalante-core';
 import {
   RoleData,
   UserData,
@@ -12,7 +11,6 @@ import { In, Repository } from 'typeorm';
 
 import { UserFilters } from '../../domain/core/user-filters';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
-import UserRegisterCreateDto from '../web/v1/model/request/user-preferences-create.dto';
 
 @Injectable()
 export class UsersRepositoryImpl implements UsersRepository {
@@ -25,39 +23,10 @@ export class UsersRepositoryImpl implements UsersRepository {
     private readonly userDetailRepository: Repository<UserDetailData>,
   ) {}
 
-  public updatePreferences(
-    userId: string,
-    preferences: string[],
-  ): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  public saveDetail(
-    id: string,
-    detail: UserRegisterCreateDto,
-  ): Promise<UserDetail | null> {
-    const userDetail = this.userDetailRepository.create({
-      ...detail,
-    });
-    const res = this.userRepository.findOne({ where: { id } }).then((user) => {
-      if (!user) {
-        return null;
-      }
-      user.detail = userDetail;
-      return this.userRepository
-        .save(user)
-        .then(({ detail }) => detail || null);
-    });
-    return res;
-  }
-
   public findByEmail(email: string): Promise<User | null> {
-    return (
-      this.userRepository
-        .findOne({ where: { email } })
-        // TODO: Fix this
-        .then((user) => user as User | null)
-    );
+    return this.userRepository
+      .findOne({ where: { email } })
+      .then((user) => user as User | null);
   }
 
   public countByCriteria(filters: UserFilters): Promise<number> {
@@ -71,7 +40,6 @@ export class UsersRepositoryImpl implements UsersRepository {
         { term: `%${search}%` },
       );
     }
-
     if (role) {
       query
         .innerJoin('user.roles', 'role')
@@ -85,9 +53,7 @@ export class UsersRepositoryImpl implements UsersRepository {
     pagination?: Pagination,
   ): Promise<User[]> {
     const { search, role } = filters;
-
     const query = this.userRepository.createQueryBuilder('user');
-
     // Filtro por búsqueda en múltiples campos
     if (search) {
       query.andWhere(
@@ -95,20 +61,16 @@ export class UsersRepositoryImpl implements UsersRepository {
         { term: `%${search}%` },
       );
     }
-
     // Filtro por rol si está definido
     if (role) {
       query
         .innerJoin('user.roles', 'role')
         .andWhere('role.name = :role', { role });
     }
-
     if (pagination) {
       query.skip(pagination.skip).take(pagination.take);
     }
-
     // console.log({ sql: query.getSql(), params: query.getParameters() });
-
     return (
       query
         .getMany()
@@ -122,132 +84,83 @@ export class UsersRepositoryImpl implements UsersRepository {
   }
 
   public findById(id: string): Promise<User | null> {
-    return (
-      this.userRepository
-        .findOne({ where: { id } })
-        // TODO: Fix this
-        .then((user) => user as User | null)
-    );
+    return this.userRepository
+      .findOne({ where: { id } })
+      .then((user) => user as User | null);
   }
 
   public save(user: User): Promise<User> {
-    return (
-      this.userRepository
-        .save(user)
-        // TODO: Fix this
-        .then((user) => user as User)
-    );
+    return this.userRepository.save(user).then((user) => user as User);
   }
 
   public findAll(pagination?: Pagination): Promise<User[]> {
     if (pagination) {
       const { skip, take } = pagination;
-      return (
-        this.userRepository
-          .find({ skip, take })
-          // TODO: Fix this
-          .then((users) => users.map((user) => user as User))
-      );
+      return this.userRepository
+        .find({ skip, take })
+        .then((users) => users.map((user) => user as User));
     }
-    return (
-      this.userRepository
-        .find()
-        // TODO: Fix this
-        .then((users) => users.map((user) => user as User))
-    );
+    return this.userRepository
+      .find()
+      .then((users) => users.map((user) => user as User));
   }
 
-  public async lockAccount(email: string): Promise<User | null> {
+  public async lockAccount(email: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ email });
-    if (user) {
-      user.active = false;
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as User)
-      );
-    }
-    return null;
+    if (!user) throw new Error('Usuario no encontrado');
+
+    user.active = false;
+    return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async unlockAccount(email: string): Promise<User | null> {
+  public async unlockAccount(email: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ email });
-    if (user) {
-      user.active = true;
-      return this.userRepository.save(user).then((user) => user as User);
-    }
-    return null;
+    if (!user) throw new Error('Usuario no encontrado');
+    user.active = true;
+    return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async verifyAccount(email: string): Promise<User | null> {
+  public async verifyAccount(email: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ email });
-    if (user) {
-      user.verified = true;
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as User)
-      );
-    }
-    return null;
+    if (!user) throw new Error('Usuario no encontrado');
+    user.verified = true;
+    return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async unVerifyAccount(email: string): Promise<User | null> {
+  public async unVerifyAccount(email: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ email });
-    if (user) {
-      user.verified = false;
-      return this.userRepository.save(user).then((user) => user as User);
-    }
-    return null;
+    if (!user) throw new Error('Usuario no encontrado');
+    user.verified = false;
+    return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async setOnboardingCompleted(id: string): Promise<User | null> {
+  public async setOnboardingCompleted(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
-    if (user) {
-      user.onboardingCompleted = true;
-      return this.userRepository.save(user).then((user) => user as User);
-    }
-    return null;
+    if (!user) throw new Error('Usuario no encontrado');
+    user.onboardingCompleted = true;
+    return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public addUserRoles(
-    email: string,
-    rolesToAdd: AppRole[],
-  ): Promise<User | null> {
+  public addUserRoles(email: string, rolesToAdd: AppRole[]): Promise<User> {
     return Promise.all([
       this.userRepository.findOneBy({ email }),
       this.roleRepository.find({
         where: { name: In(rolesToAdd) },
       }),
     ]).then(([user, roles]) => {
-      if (!user) return null;
+      if (!user) throw new Error('Usuario no encontrado');
       user.roles.push(...roles);
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as User | null)
-      );
+      return this.userRepository.save(user).then((user) => user as User);
     });
   }
 
-  public removeUserRoles(
-    email: string,
-    roles: AppRole[],
-  ): Promise<User | null> {
+  public removeUserRoles(email: string, roles: AppRole[]): Promise<User> {
     return this.userRepository.findOneBy({ email }).then((user) => {
-      if (!user) return null;
+      if (!user) throw new Error('Usuario no encontrado');
       user.roles = user.roles.filter(
         (role) => !roles.some((r) => r === role.name),
       );
-      return (
-        this.userRepository
-          .save(user)
-          // TODO: Fix this
-          .then((user) => user as User | null)
-      );
+      return this.userRepository.save(user).then((user) => user as User);
     });
   }
 }

@@ -41,6 +41,10 @@ import { UserContactRepositoryImpl } from './infrastructure/database/user-contac
 import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
 import { UsersContactController } from './infrastructure/web/v1/user-contact.controller';
 import { UsersController } from './infrastructure/web/v1/users.controller';
+import { UserPreferencesRepository } from './domain/gateway/database/user-preferences.repository';
+import { UserPreferencesRepositoryImpl } from './infrastructure/database/user-preferences.repository';
+import { UserDetailRepository } from './domain/gateway/database/user-detail.repository';
+import { UserDetailRepositoryImpl } from './infrastructure/database/user-detail.repository';
 
 @Module({
   controllers: [UsersController, UsersContactController],
@@ -60,6 +64,14 @@ import { UsersController } from './infrastructure/web/v1/users.controller';
     {
       provide: UserContactRepository,
       useClass: UserContactRepositoryImpl,
+    },
+    {
+      provide: UserDetailRepository,
+      useClass: UserDetailRepositoryImpl,
+    },
+    {
+      provide: UserPreferencesRepository,
+      useClass: UserPreferencesRepositoryImpl,
     },
     {
       provide: UserAMQPProducer,
