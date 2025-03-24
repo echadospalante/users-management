@@ -7,20 +7,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  AppRole,
-  BasicType,
-  ComplexInclude,
-  Pagination,
-  User,
-} from 'echadospalante-core';
+import { AppRole, ComplexInclude, Pagination, User } from 'echadospalante-core';
 
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';
+import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { RolesRepository } from '../gateway/database/roles.repository';
 import { UsersRepository } from '../gateway/database/users.repository';
-import { UserFilters } from '../core/user-filters';
 
 // export class LoginResponse {
 //   firstName: string;
@@ -50,24 +44,17 @@ export class UsersService {
     include: ComplexInclude<User>,
     pagination: Pagination,
   ): Promise<User[]> {
-    return this.usersRepository.findAllByCriteria(filters, include, pagination);
+    return this.usersRepository.findAllByCriteria(filters, pagination);
   }
 
   public async getUserById(userId: string): Promise<User> {
-    const user = await this.usersRepository.findById(userId, {
-      roles: true,
-      detail: false,
-      preferences: false,
-    });
+    const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
-  public async getUserByEmail(
-    email: string,
-    include: ComplexInclude<User>,
-  ): Promise<User> {
-    const user = await this.usersRepository.findByEmail(email, include);
+  public async getUserByEmail(email: string): Promise<User> {
+    const user = await this.usersRepository.findByEmail(email);
     console.log({ user });
     if (!user) throw new NotFoundException('User not found');
     return user;
@@ -78,9 +65,7 @@ export class UsersService {
   }
 
   public async saveUser(user: UserCreateDto): Promise<User> {
-    const userDB = await this.usersRepository.findByEmail(user.email, {
-      roles: true,
-    });
+    const userDB = await this.usersRepository.findByEmail(user.email);
 
     if (userDB && !userDB.active)
       throw new ForbiddenException('User is disabled');
@@ -120,9 +105,7 @@ export class UsersService {
     email: string,
     detail: UserRegisterCreateDto,
   ): Promise<void> {
-    const userDB = await this.usersRepository.findByEmail(email, {
-      roles: true,
-    });
+    const userDB = await this.usersRepository.findByEmail(email);
     if (!userDB) throw new NotFoundException('User not found');
 
     this.usersRepository.registerUser(email, detail);
@@ -132,7 +115,7 @@ export class UsersService {
   }
 
   public async enableUser(userId: string): Promise<User | null> {
-    const user = await this.usersRepository.findById(userId, { roles: true });
+    const user = await this.usersRepository.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -150,7 +133,7 @@ export class UsersService {
   }
 
   public async disableUser(userId: string): Promise<User | null> {
-    const user = await this.usersRepository.findById(userId, { roles: true });
+    const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotFoundException('User not found');
 
     if (!user.active) throw new BadRequestException('User is already disabled');
@@ -168,7 +151,7 @@ export class UsersService {
   }
 
   public async verifyUser(email: string): Promise<User | null> {
-    const user = await this.usersRepository.findByEmail(email, {});
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
 
     if (user.verified)
@@ -183,8 +166,8 @@ export class UsersService {
     });
   }
 
-  public async unverifyUser(email: string): Promise<User | null> {
-    const user = await this.usersRepository.findByEmail(email, { roles: true });
+  public async unVerifyUser(email: string): Promise<User | null> {
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
     console.log({ USER: user });
     if (!user.verified)
@@ -194,7 +177,7 @@ export class UsersService {
     if (isAdmin)
       throw new ForbiddenException('Admin user cannot be unverified');
 
-    return this.usersRepository.unverifyAccount(user.email).then((userDB) => {
+    return this.usersRepository.unVerifyAccount(user.email).then((userDB) => {
       if (!userDB) {
         throw new BadRequestException('User could not be unverified');
       }
@@ -228,14 +211,10 @@ export class UsersService {
   }
 
   public getUserPreferences(userId: string) {
-    return this.usersRepository
-      .findById(userId, {
-        preferences: true,
-      })
-      .then((user) => {
-        if (!user) throw new NotFoundException('User not found');
-        return user.preferences;
-      });
+    return this.usersRepository.findById(userId).then((user) => {
+      if (!user) throw new NotFoundException('User not found');
+      return user.preferences;
+    });
   }
 
   public getRoles() {
@@ -246,7 +225,7 @@ export class UsersService {
     email: string,
     roles: AppRole[],
   ): Promise<void> {
-    const user = await this.usersRepository.findByEmail(email, { roles: true });
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
     if (roles.includes(AppRole.ADMIN) || roles.includes(AppRole.USER))
       throw new BadRequestException('Admin or user role cannot be added');
@@ -261,16 +240,9 @@ export class UsersService {
       .filter((role) => !baseRoles.some(({ name }) => role === name))
       .filter((role) => !roles.some((name) => role === name));
 
-    const rolesToAdd = await this.rolesRepository.findManyByName(addedRoles);
-    const rolesToRemove =
-      await this.rolesRepository.findManyByName(removedRoles);
-
-    return Promise.all([
-      this.usersRepository.addUserRoles(email, rolesToAdd),
-      this.usersRepository.removeUserRoles(email, rolesToRemove),
-    ]).then(() => {
-      this.logger.log(`Roles updated for user ${email}`);
-      this.userAMQPProducer.emitUserUpdatedEvent(user);
-    });
+    await this.usersRepository.addUserRoles(email, addedRoles);
+    await this.usersRepository.removeUserRoles(email, removedRoles);
+    this.logger.log(`Roles updated for user ${email}`);
+    this.userAMQPProducer.emitUserUpdatedEvent(user);
   }
 }

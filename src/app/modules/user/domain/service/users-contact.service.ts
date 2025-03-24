@@ -16,14 +16,8 @@ export class UsersContactService {
     private userAMQPProducer: UserAMQPProducer,
   ) {}
 
-  public async getUserContact(
-    email: string,
-    include: ComplexInclude<UserContact>,
-  ): Promise<UserContact> {
-    const userContact = await this.userContactRepository.findByEmail(
-      email,
-      include,
-    );
+  public async getUserContact(email: string): Promise<UserContact> {
+    const userContact = await this.userContactRepository.findByEmail(email);
     if (!userContact) {
       throw new NotFoundException('User contact not found');
     }

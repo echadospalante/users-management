@@ -1,7 +1,10 @@
+import 'reflect-metadata';
+
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
+import { ConfigService } from '@nestjs/config';
 
 const main = async () => {
   const logger = new Logger('main', { timestamp: true });
@@ -24,8 +27,11 @@ const main = async () => {
     credentials: true,
   });
 
-  await app.listen(3010).then(() => {
-    logger.log(`Server up and running on port ${3010}`);
+  const configService = app.get(ConfigService);
+  const port = configService.getOrThrow<number>('PORT');
+
+  await app.listen(port).then(() => {
+    logger.log(`Server up and running on port ${port}`);
   });
 };
 

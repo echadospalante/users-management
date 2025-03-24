@@ -9,7 +9,6 @@ import UserCreateDto from './model/request/user-create.dto';
 import UserRegisterCreateDto from './model/request/user-preferences-create.dto';
 import UsersQueryDto from './model/request/users-query.dto';
 import UserRolesUpdateDto from './model/request/user-roles-update.dto';
-import UserQueryDto from './model/request/user-query.dto';
 
 const path = '/users';
 
@@ -67,8 +66,7 @@ export class UsersController {
   public unverifyUser(
     @Http.Param('email') email: string,
   ): Promise<User | null> {
-    console.log({ EMAIL: email });
-    return this.usersService.unverifyUser(email);
+    return this.usersService.unVerifyUser(email);
   }
 
   @Http.Put('/roles')
@@ -114,11 +112,7 @@ export class UsersController {
 
   @Http.Get('/:email')
   @Http.HttpCode(Http.HttpStatus.OK)
-  public getUserByEmail(
-    @Http.Param('email') email: string,
-    @Http.Query() query: UserQueryDto,
-  ): Promise<User> {
-    const { include } = UserQueryDto.parseQuery(query);
-    return this.usersService.getUserByEmail(email, include);
+  public getUserByEmail(@Http.Param('email') email: string): Promise<User> {
+    return this.usersService.getUserByEmail(email);
   }
 }

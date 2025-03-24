@@ -1,10 +1,7 @@
-import { ComplexInclude, UserContact } from 'echadospalante-core';
+import { UserContact } from 'echadospalante-core';
 
 export interface UserContactRepository {
-  findByEmail(
-    email: string,
-    include: Partial<ComplexInclude<UserContact>>,
-  ): Promise<UserContact | null>;
+  findByEmail(email: string): Promise<UserContact | null>;
 }
 
 export const UserContactRepository = Symbol('UserContactRepository');

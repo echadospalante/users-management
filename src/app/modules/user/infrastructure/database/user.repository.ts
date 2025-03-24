@@ -1,362 +1,258 @@
 import { Injectable } from '@nestjs/common';
 
-import { ComplexInclude, Pagination, Role, User } from 'echadospalante-core';
+import { AppRole, Pagination, User } from 'echadospalante-core';
 
-import { PrismaConfig } from '../../../../config/prisma/prisma.connection';
+import { InjectRepository } from '@nestjs/typeorm';
+import {
+  RoleData,
+  UserData,
+} from 'echadospalante-core/src/app/modules/infrastructure/database/entities';
+import { In, Repository } from 'typeorm';
 import { UserFilters } from '../../domain/core/user-filters';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
 import UserRegisterCreateDto from '../web/v1/model/request/user-preferences-create.dto';
 
 @Injectable()
 export class UsersRepositoryImpl implements UsersRepository {
-  public constructor(private prismaClient: PrismaConfig) {}
+  public constructor(
+    @InjectRepository(UserData)
+    private readonly userRepository: Repository<UserData>,
+    @InjectRepository(RoleData)
+    private readonly roleRepository: Repository<RoleData>,
+  ) {}
 
-  public save(user: User): Promise<User> {
-    return this.prismaClient.client.user
-      .create({
-        data: {
-          ...user,
-          roles: {
-            connect: user.roles.map((role) => ({ id: role.id })),
-          },
-          preferences: {
-            connect: user.preferences.map((preference) => ({
-              id: preference.id,
-            })),
-          },
-          contact: undefined,
-          detail: undefined,
-        },
-      })
-      .then(() => user as User);
+  public updatePreferences(
+    userId: string,
+    preferences: string[],
+  ): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 
-  public findByEmail(
-    email: string,
-    include: ComplexInclude<User>,
-  ): Promise<User | null> {
-    return this.prismaClient.client.user
-      .findFirst({
-        where: {
-          email,
-        },
-        include,
-      })
-      .then((user) => user as User | null);
+  public registerUser(
+    userId: string,
+    detail: UserRegisterCreateDto,
+  ): Promise<void> {
+    return Promise.resolve(undefined);
   }
 
-  public async countByCriteria(filters: UserFilters): Promise<number> {
-    const { gender, role, search } = filters;
-    return this.prismaClient.client.user.count({
-      where: {
-        AND: {
-          OR: [
-            {
-              email: {
-                contains: search,
-              },
-            },
-            {
-              firstName: {
-                contains: search,
-              },
-            },
-            {
-              lastName: {
-                contains: search,
-              },
-            },
-          ],
+  public findByEmail(email: string): Promise<User | null> {
+    return (
+      this.userRepository
+        .findOne({ where: { email } })
+        // TODO: Fix this
+        .then((user) => user as unknown as User | null)
+    );
+  }
 
-          detail: {
-            gender,
-          },
-          roles: {
-            some: {
-              name: role,
-            },
-          },
-        },
-      },
-    });
+  public countByCriteria(filters: UserFilters): Promise<number> {
+    const { search, gender, role } = filters;
+
+    const query = this.userRepository.createQueryBuilder('user');
+
+    if (search) {
+      query.andWhere(
+        '(user.email LIKE :term OR user.firstName LIKE :term OR user.lastName LIKE :term)',
+        { term: `%${search}%` },
+      );
+    }
+    if (gender) {
+      query.andWhere('user.detail.gender = :gender', { gender });
+    }
+    if (role) {
+      query
+        .innerJoin('user.roles', 'role')
+        .andWhere('role.name = :role', { role });
+    }
+    return query.getCount();
   }
 
   public findAllByCriteria(
     filters: UserFilters,
-    include: ComplexInclude<User>,
     pagination?: Pagination,
   ): Promise<User[]> {
-    const { gender, role, search } = filters;
-    console.log({ filters });
-    return this.prismaClient.client.user
-      .findMany({
-        where: {
-          AND: {
-            OR: [
-              {
-                email: {
-                  contains: search,
-                },
-              },
-              {
-                firstName: {
-                  contains: search,
-                },
-              },
-              {
-                lastName: {
-                  contains: search,
-                },
-              },
-            ],
+    const { search, gender, role } = filters;
 
-            detail: {
-              gender,
-            },
-            roles: {
-              some: {
-                name: role,
-              },
-            },
-          },
-        },
-        include,
-        skip: pagination?.skip,
-        take: pagination?.take,
-      })
-      .then((users) => users as unknown as User[]);
+    const query = this.userRepository.createQueryBuilder('user');
+
+    // Filtro por búsqueda en múltiples campos
+    if (search) {
+      query.andWhere(
+        '(user.email LIKE :term OR user.firstName LIKE :term OR user.lastName LIKE :term)',
+        { term: `%${search}%` },
+      );
+    }
+
+    // Filtro por género si está definido
+    if (gender) {
+      query.andWhere('user.gender = :gender', { gender });
+    }
+
+    // Filtro por rol si está definido
+    if (role) {
+      query
+        .innerJoin('user.roles', 'role')
+        .andWhere('role.name = :role', { role });
+    }
+
+    // Aplicar paginación si está definida
+    if (pagination) {
+      query.skip(pagination.skip).take(pagination.take);
+    }
+
+    return (
+      query
+        .getMany()
+        // Fix this
+        .then((users) => users as User[])
+    );
   }
 
-  public deleteByEmail(email: string): Promise<void> {
-    return this.prismaClient.client.user
-      .delete({
-        where: { email },
-      })
-      .then(() => {
-        console.log('User deleted');
-      });
+  public deleteByEmail(id: string): Promise<void> {
+    return this.userRepository.delete(id).then(() => undefined);
   }
 
-  public findById(
-    id: string,
-    include: ComplexInclude<User>,
+  public findById(id: string): Promise<User | null> {
+    return (
+      this.userRepository
+        .findOne({ where: { id } })
+        // TODO: Fix this
+        .then((user) => user as unknown as User | null)
+    );
+  }
+
+  public save(user: User): Promise<User> {
+    return (
+      this.userRepository
+        .save(user)
+        // TODO: Fix this
+        .then((user) => user as unknown as User)
+    );
+  }
+
+  public findAll(pagination?: Pagination): Promise<User[]> {
+    if (pagination) {
+      const { skip, take } = pagination;
+      return (
+        this.userRepository
+          .find({ skip, take })
+          // TODO: Fix this
+          .then((users) => users.map((user) => user as unknown as User))
+      );
+    }
+    return (
+      this.userRepository
+        .find()
+        // TODO: Fix this
+        .then((users) => users.map((user) => user as unknown as User))
+    );
+  }
+
+  public async lockAccount(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      user.active = false;
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User)
+      );
+    }
+    return null;
+  }
+
+  public async unlockAccount(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      user.active = true;
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User)
+      );
+    }
+    return null;
+  }
+
+  public async verifyAccount(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      user.verified = true;
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User)
+      );
+    }
+    return null;
+  }
+
+  public async unVerifyAccount(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      user.verified = false;
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User)
+      );
+    }
+    return null;
+  }
+
+  public async setOnboardingCompleted(email: string): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (user) {
+      user.onboardingCompleted = false;
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User)
+      );
+    }
+    return null;
+  }
+
+  public addUserRoles(
+    email: string,
+    rolesToAdd: AppRole[],
   ): Promise<User | null> {
-    return this.prismaClient.client.user
-      .findUnique({
-        where: {
-          id,
-        },
-        include,
-      })
-      .then((user) => user as User | null);
+    return Promise.all([
+      this.userRepository.findOneBy({ email }),
+      this.roleRepository.find({
+        where: { name: In(rolesToAdd) },
+      }),
+    ]).then(([user, roles]) => {
+      if (!user) return null;
+      user.roles.push(...roles);
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User | null)
+      );
+    });
   }
 
-  public findAll(
-    include: ComplexInclude<User>,
-    pagination?: Pagination,
-  ): Promise<User[]> {
-    return this.prismaClient.client.user
-      .findMany({
-        include,
-        skip: pagination?.skip,
-        take: pagination?.take,
-      })
-      .then((users) => users as unknown as User[]);
-  }
-
-  public lockAccount(email: string): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          active: false,
-        },
-      })
-      .then((user) => {
-        console.log('User locked');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public unlockAccount(email: string): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          active: true,
-        },
-      })
-      .then((user) => {
-        console.log('User unlocked');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public verifyAccount(email: string): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          verified: true,
-        },
-      })
-      .then((user) => {
-        console.log('User verified');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public unverifyAccount(email: string): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          verified: false,
-        },
-      })
-      .then((user) => {
-        console.log('User unverified');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public addUserRoles(email: string, roles: Role[]): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          roles: {
-            connect: roles.map((role) => ({
-              id: role.id,
-            })),
-          },
-        },
-      })
-      .then((user) => {
-        console.log('User roles updated successfully');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public removeUserRoles(email: string, roles: Role[]): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          roles: {
-            disconnect: roles.map((role) => ({
-              id: role.id,
-            })),
-          },
-        },
-      })
-      .then((user) => {
-        console.log('User roles updated successfully');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public setOnboardingCompleted(email: string): Promise<User | null> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          onboardingCompleted: true,
-        },
-      })
-      .then((user) => {
-        console.log('User onboarding completed');
-        return user as unknown as User;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
-  }
-
-  public registerUser(
+  public removeUserRoles(
     email: string,
-    detail: UserRegisterCreateDto,
-  ): Promise<void> {
-    return this.prismaClient.client.userDetail
-      .create({
-        data: {
-          gender: detail.gender,
-          birthDate: detail.birthDate,
-          municipality: {
-            connect: {
-              id: detail.municipalityId,
-            },
-          },
-          user: {
-            connect: {
-              email,
-            },
-          },
-        },
-      })
-      .then(() => {
-        console.log('User detail updated');
-      });
-  }
-
-  public updatePreferences(
-    email: string,
-    preferences: string[],
-  ): Promise<void> {
-    return this.prismaClient.client.user
-      .update({
-        where: {
-          email,
-        },
-        data: {
-          preferences: {
-            connect: preferences.map((preference) => ({
-              id: preference,
-            })),
-          },
-        },
-      })
-      .then(() => {
-        console.log('User preferences updated');
-      });
+    roles: AppRole[],
+  ): Promise<User | null> {
+    return this.userRepository.findOneBy({ email }).then((user) => {
+      if (!user) return null;
+      user.roles = user.roles.filter(
+        (role) => !roles.some((r) => r === role.name),
+      );
+      return (
+        this.userRepository
+          .save(user)
+          // TODO: Fix this
+          .then((user) => user as unknown as User | null)
+      );
+    });
   }
 }
