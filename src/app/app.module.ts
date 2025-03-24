@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { environment } from '../env/env';
-import { JoiValidationSchema } from '../env/joi.config';
+import { environment, JoiValidationSchema } from '../env/joi.config';
 import { RabbitMQConfig } from './config/amqp/amqp.connection';
 import { UserModule } from './modules/user/user.module';
 
@@ -32,13 +31,13 @@ import { UserModule } from './modules/user/user.module';
         migrations: [__dirname + '/config/migrations/*{.ts,.js}'],
         applicationName: configService.get<string>('APP_NAME'),
         autoLoadEntities: true,
-        extra: {
-          extra: {
-            max: 100, // Máximo de conexiones en el pool
-            idleTimeoutMillis: 30000, // Tiempo de espera antes de cerrar una conexión inactiva
-            connectionTimeoutMillis: 2000, // Tiempo máximo para intentar una nueva conexión
-          },
-        },
+        // extra: {
+        //   extra: {
+        //     max: 100, // Máximo de conexiones en el pool
+        //     idleTimeoutMillis: 30000, // Tiempo de espera antes de cerrar una conexión inactiva
+        //     connectionTimeoutMillis: 2000, // Tiempo máximo para intentar una nueva conexión
+        //   },
+        // },
       }),
     }),
   ],

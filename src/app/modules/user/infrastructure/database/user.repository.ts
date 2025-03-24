@@ -6,8 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   RoleData,
   UserData,
-} from 'echadospalante-core/src/app/modules/infrastructure/database/entities';
+} from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
+
 import { UserFilters } from '../../domain/core/user-filters';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
 import UserRegisterCreateDto from '../web/v1/model/request/user-preferences-create.dto';
