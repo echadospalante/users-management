@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { environment, JoiValidationSchema } from '../env/joi.config';
-import { RabbitMQConfig } from './config/amqp/amqp.connection';
+import { RabbitMQConfig } from './config/rabbitmq/amqp.connection';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -28,9 +28,11 @@ import { UserModule } from './modules/user/user.module';
         database: configService.get<string>('DB_NAME'),
         synchronize: configService.get<boolean>('DB_SYNC'),
         logging: configService.get<boolean>('DB_LOGGING'),
-        migrations: [__dirname + '/config/migrations/*{.ts,.js}'],
+        migrations: [__dirname + '../../src/app/config/typeorm/migrations'],
         applicationName: configService.get<string>('APP_NAME'),
         autoLoadEntities: true,
+        migrationsRun: true,
+        migrationsTableName: 'z_typeorm_migrations',
         // extra: {
         //   extra: {
         //     max: 100, // Máximo de conexiones en el pool

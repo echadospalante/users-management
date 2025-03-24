@@ -27,7 +27,7 @@ import {
   VentureSubscriptionData,
 } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
 
-import { RabbitMQConfig } from '../../config/amqp/amqp.connection';
+import { RabbitMQConfig } from '../../config/rabbitmq/amqp.connection';
 import { CreateUserInterceptor } from './application/interceptors/create-user.interceptor';
 import { UserAMQPProducer } from './domain/gateway/amqp/user.amqp';
 import { RolesRepository } from './domain/gateway/database/roles.repository';

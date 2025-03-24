@@ -15,19 +15,9 @@ import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/use
 import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { RolesRepository } from '../gateway/database/roles.repository';
-import { UsersRepository } from '../gateway/database/users.repository';
-import { UserPreferencesRepository } from '../gateway/database/user-preferences.repository';
 import { UserDetailRepository } from '../gateway/database/user-detail.repository';
-
-// export class LoginResponse {
-//   firstName: string;
-//   lastName: string;
-//   picture: string;
-//   email: string;
-//   id: string;
-//   roles: AppRole[];
-//   active: boolean;
-// }
+import { UserPreferencesRepository } from '../gateway/database/user-preferences.repository';
+import { UsersRepository } from '../gateway/database/users.repository';
 
 @Injectable()
 export class UsersService {

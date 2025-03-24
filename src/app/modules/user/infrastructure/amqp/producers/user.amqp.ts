@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Channel } from 'amqplib';
 import { User } from 'echadospalante-core';
 
-import { RabbitMQConfig } from '../../../../../config/amqp/amqp.connection';
+import { RabbitMQConfig } from '../../../../../config/rabbitmq/amqp.connection';
 import { UserAMQPProducer } from '../../../domain/gateway/amqp/user.amqp';
 
 @Injectable()
