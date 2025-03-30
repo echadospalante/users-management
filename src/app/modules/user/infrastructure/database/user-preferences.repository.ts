@@ -7,8 +7,8 @@ import {
 } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
+import { VentureCategory } from 'echadospalante-core';
 import { UserPreferencesRepository } from '../../domain/gateway/database/user-preferences.repository';
-import { UserContact } from 'echadospalante-core';
 
 @Injectable()
 export class UserPreferencesRepositoryImpl
@@ -21,10 +21,16 @@ export class UserPreferencesRepositoryImpl
     private readonly ventureCategoryRepository: Repository<VentureCategoryData>,
   ) {}
 
+  public async findByUserId(userId: string): Promise<VentureCategory[]> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) return [];
+    return user.preferences as VentureCategory[];
+  }
+
   public updatePreferences(
     userId: string,
     preferencesIds: string[],
-  ): Promise<UserContact | null> {
+  ): Promise<VentureCategory[] | null> {
     return Promise.all([
       this.userRepository.findOne({ where: { id: userId } }),
       this.ventureCategoryRepository.find({
@@ -37,7 +43,7 @@ export class UserPreferencesRepositoryImpl
       user.preferences = preferences;
       return this.userRepository
         .save(user)
-        .then((user) => user as unknown as UserContact);
+        .then((user) => user.preferences as VentureCategory[]);
     });
   }
 }

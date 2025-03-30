@@ -31,15 +31,8 @@ import { UserModule } from './modules/user/user.module';
         migrations: [__dirname + '../../src/app/config/typeorm/migrations'],
         applicationName: configService.get<string>('APP_NAME'),
         autoLoadEntities: true,
-        migrationsRun: true,
+        migrationsRun: false,
         migrationsTableName: 'z_typeorm_migrations',
-        // extra: {
-        //   extra: {
-        //     max: 100, // Máximo de conexiones en el pool
-        //     idleTimeoutMillis: 30000, // Tiempo de espera antes de cerrar una conexión inactiva
-        //     connectionTimeoutMillis: 2000, // Tiempo máximo para intentar una nueva conexión
-        //   },
-        // },
       }),
     }),
   ],

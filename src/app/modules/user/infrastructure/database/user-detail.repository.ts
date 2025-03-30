@@ -23,6 +23,14 @@ export class UserDetailRepositoryImpl implements UserDetailRepository {
     private readonly userRepository: Repository<UserData>,
   ) {}
 
+  public async findByUserId(userId: string): Promise<UserDetail | null> {
+    return this.userDetailRepository
+      .findOne({
+        where: { user: { id: userId } },
+      })
+      .then((userDetail) => userDetail as UserDetail | null);
+  }
+
   public async updateDetail(
     id: string,
     detail: UserRegisterCreateDto,

@@ -15,31 +15,20 @@ export class RolesRepositoryImpl implements RolesRepository {
   ) {}
 
   public findByName(role: AppRole): Promise<Role | null> {
-    return (
-      this.userRepository
-        .findOne({ where: { name: role } })
-        // TODO: Fix this
-        .then((role) => role as Role | null)
-    );
+    return this.userRepository
+      .findOne({ where: { name: role } })
+      .then((role) => role as Role | null);
   }
 
-  public findAll(): Promise<Role[]> {
-    return (
-      this.userRepository
-        .find({})
-        // TODO: Fix this
-        .then((roles) => roles.map((role) => role as Role))
-    );
+  public async findAll(): Promise<Role[]> {
+    return this.userRepository.find({}).then((roles) => roles as Role[]);
   }
 
   public findManyByName(roles: AppRole[]): Promise<Role[]> {
-    return (
-      this.userRepository
-        .find({
-          where: { name: In(roles) },
-        })
-        // TODO: Fix this
-        .then((roles) => roles.map((role) => role as Role))
-    );
+    return this.userRepository
+      .find({
+        where: { name: In(roles) },
+      })
+      .then((roles) => roles as Role[]);
   }
 }

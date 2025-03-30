@@ -1,4 +1,4 @@
-name: Deploy Application Gateway to Virtual Box - VPS
+name: Deploy Users Management to Virtual Box - VPS
 
 on:
   push:

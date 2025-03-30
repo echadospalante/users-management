@@ -105,30 +105,30 @@ export class UsersRepositoryImpl implements UsersRepository {
       .then((users) => users.map((user) => user as User));
   }
 
-  public async lockAccount(email: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
+  public async lockAccount(id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
 
     user.active = false;
     return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async unlockAccount(email: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
+  public async unlockAccount(id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.active = true;
     return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async verifyAccount(email: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
+  public async verifyAccount(id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.verified = true;
     return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public async unVerifyAccount(email: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ email });
+  public async unVerifyAccount(id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.verified = false;
     return this.userRepository.save(user).then((user) => user as User);
@@ -141,9 +141,9 @@ export class UsersRepositoryImpl implements UsersRepository {
     return this.userRepository.save(user).then((user) => user as User);
   }
 
-  public addUserRoles(email: string, rolesToAdd: AppRole[]): Promise<User> {
+  public addUserRoles(id: string, rolesToAdd: AppRole[]): Promise<User> {
     return Promise.all([
-      this.userRepository.findOneBy({ email }),
+      this.userRepository.findOneBy({ id }),
       this.roleRepository.find({
         where: { name: In(rolesToAdd) },
       }),
@@ -154,8 +154,8 @@ export class UsersRepositoryImpl implements UsersRepository {
     });
   }
 
-  public removeUserRoles(email: string, roles: AppRole[]): Promise<User> {
-    return this.userRepository.findOneBy({ email }).then((user) => {
+  public removeUserRoles(id: string, roles: AppRole[]): Promise<User> {
+    return this.userRepository.findOneBy({ id }).then((user) => {
       if (!user) throw new Error('Usuario no encontrado');
       user.roles = user.roles.filter(
         (role) => !roles.some((r) => r === role.name),

@@ -14,12 +14,9 @@ export class UserContactRepositoryImpl implements UserContactRepository {
     private readonly userRepository: Repository<UserContactData>,
   ) {}
 
-  public findByEmail(email: string): Promise<UserContact | null> {
-    return (
-      this.userRepository
-        .findOne({ where: { user: { email } } })
-        // TODO: Fix this
-        .then((user) => user as UserContact | null)
-    );
+  public async findByUserId(userId: string): Promise<UserContact | null> {
+    return this.userRepository
+      .findOne({ where: { user: { id: userId } } })
+      .then((user) => user as UserContact | null);
   }
 }

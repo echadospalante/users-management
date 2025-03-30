@@ -1,9 +1,9 @@
 import * as Http from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 
-import { UsersContactService } from '../../../domain/service/users-contact.service';
+import { UsersContactService } from '../../../domain/service/user-contact.service';
 
-const path = '/users/contact';
+const path = '/users';
 
 @Http.Controller(path)
 export class UsersContactController {
@@ -13,11 +13,11 @@ export class UsersContactController {
     private readonly usersContactService: UsersContactService,
   ) {}
 
-  @Http.Get('/:email')
+  @Http.Get('/:id/contact')
   @Http.HttpCode(Http.HttpStatus.OK)
-  public async getUserContactByEmail(@Http.Param() email: string) {
+  public async getUserContactByEmail(@Http.Param('id') id: string) {
     const [items, total] = await Promise.all([
-      this.usersContactService.getUserContact(email),
+      this.usersContactService.getUserContact(id),
       0,
     ]);
     return { items, total };

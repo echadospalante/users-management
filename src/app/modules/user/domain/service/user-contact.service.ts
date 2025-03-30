@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
-import { ComplexInclude, UserContact } from 'echadospalante-core';
+import { UserContact } from 'echadospalante-core';
 
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { UserContactRepository } from '../gateway/database/user-contact.repository';
@@ -16,8 +16,8 @@ export class UsersContactService {
     private userAMQPProducer: UserAMQPProducer,
   ) {}
 
-  public async getUserContact(email: string): Promise<UserContact> {
-    const userContact = await this.userContactRepository.findByEmail(email);
+  public async getUserContact(userId: string): Promise<UserContact> {
+    const userContact = await this.userContactRepository.findByUserId(userId);
     if (!userContact) {
       throw new NotFoundException('User contact not found');
     }

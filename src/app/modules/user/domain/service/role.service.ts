@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Role } from 'echadospalante-core';
+
+import { AppRole, Role } from 'echadospalante-core';
+
 import { RolesRepository } from '../gateway/database/roles.repository';
 
 @Injectable()
@@ -8,11 +10,18 @@ export class RolesService {
 
   public constructor(
     @Inject(RolesRepository)
-    private usersRepository: RolesRepository,
+    private rolesRepository: RolesRepository,
   ) {}
 
   public getRoles(): Promise<Role[]> {
     this.logger.log('Getting all roles');
-    return this.usersRepository.findAll({});
+    return this.rolesRepository.findAll();
+  }
+
+  public findManyByName(roles: AppRole[]): Promise<Role[]> {
+    return this.rolesRepository.findManyByName(roles);
+  }
+  public findByName(role: AppRole): Promise<Role | null> {
+    return this.rolesRepository.findByName(role);
   }
 }

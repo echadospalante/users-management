@@ -32,27 +32,43 @@ import { CreateUserInterceptor } from './application/interceptors/create-user.in
 import { UserAMQPProducer } from './domain/gateway/amqp/user.amqp';
 import { RolesRepository } from './domain/gateway/database/roles.repository';
 import { UserContactRepository } from './domain/gateway/database/user-contact.repository';
+import { UserDetailRepository } from './domain/gateway/database/user-detail.repository';
+import { UserPreferencesRepository } from './domain/gateway/database/user-preferences.repository';
 import { UsersRepository } from './domain/gateway/database/users.repository';
-import { UsersContactService } from './domain/service/users-contact.service';
-import { UsersService } from './domain/service/users.service';
+import { RolesService } from './domain/service/role.service';
+import { UsersContactService } from './domain/service/user-contact.service';
+import { UserDetailsService } from './domain/service/user-detail.service';
+import { UserPreferencesService } from './domain/service/user-preference.service';
+import { UsersService } from './domain/service/user.service';
 import { UserAMQPProducerImpl } from './infrastructure/amqp/producers/user.amqp';
 import { RolesRepositoryImpl } from './infrastructure/database/role.repository';
 import { UserContactRepositoryImpl } from './infrastructure/database/user-contact.repository';
-import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
-import { UsersContactController } from './infrastructure/web/v1/user-contact.controller';
-import { UsersController } from './infrastructure/web/v1/users.controller';
-import { UserPreferencesRepository } from './domain/gateway/database/user-preferences.repository';
-import { UserPreferencesRepositoryImpl } from './infrastructure/database/user-preferences.repository';
-import { UserDetailRepository } from './domain/gateway/database/user-detail.repository';
 import { UserDetailRepositoryImpl } from './infrastructure/database/user-detail.repository';
+import { UserPreferencesRepositoryImpl } from './infrastructure/database/user-preferences.repository';
+import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
+import { RolesController } from './infrastructure/web/v1/roles.controller';
+import { UsersContactController } from './infrastructure/web/v1/user-contact.controller';
+import { UserDetailsController } from './infrastructure/web/v1/user-details.controller';
+import { UserPreferencesController } from './infrastructure/web/v1/user-preferences.controller';
+import { UsersController } from './infrastructure/web/v1/users.controller';
 
 @Module({
-  controllers: [UsersController, UsersContactController],
+  controllers: [
+    RolesController,
+    UsersContactController,
+    UserDetailsController,
+    UserPreferencesController,
+    UsersController,
+  ],
   providers: [
-    RabbitMQConfig,
-    CreateUserInterceptor,
-    UsersService,
+    RolesService,
+    UserDetailsService,
     UsersContactService,
+    UserPreferencesService,
+    RabbitMQConfig,
+    UsersService,
+
+    CreateUserInterceptor,
     {
       provide: UsersRepository,
       useClass: UsersRepositoryImpl,

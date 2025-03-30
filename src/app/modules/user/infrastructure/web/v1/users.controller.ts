@@ -4,9 +4,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 import { User } from 'echadospalante-core';
 
-import { UsersService } from '../../../domain/service/users.service';
+import { UsersService } from '../../../domain/service/user.service';
 import UserCreateDto from './model/request/user-create.dto';
-import UserRegisterCreateDto from './model/request/user-preferences-create.dto';
 import UserRolesUpdateDto from './model/request/user-roles-update.dto';
 import UsersQueryDto from './model/request/users-query.dto';
 
@@ -18,6 +17,12 @@ export class UsersController {
 
   public constructor(private readonly usersService: UsersService) {}
 
+  @Http.Get('/:id')
+  @Http.HttpCode(Http.HttpStatus.OK)
+  public getUserById(@Http.Param('id') id: string): Promise<User> {
+    return this.usersService.getUserById(id);
+  }
+
   @Http.Post()
   @Http.HttpCode(Http.HttpStatus.CREATED)
   public createUser(@Http.Body() userCreateDto: UserCreateDto): Promise<User> {
@@ -25,7 +30,7 @@ export class UsersController {
     return this.usersService.saveUser(userCreateDto);
   }
 
-  @Http.Get()
+  @Http.Get('')
   @Http.HttpCode(Http.HttpStatus.OK)
   public async getAllUsers(@Http.Query() query: UsersQueryDto) {
     const { pagination, filters } = UsersQueryDto.parseQuery(query);
@@ -34,12 +39,6 @@ export class UsersController {
       this.usersService.countUsers(filters),
     ]);
     return { items, total };
-  }
-
-  @Http.Get('/roles')
-  @Http.HttpCode(Http.HttpStatus.OK)
-  public async getAllRoles() {
-    return this.usersService.getRoles();
   }
 
   @Http.Put('/enable/:id')
@@ -70,14 +69,17 @@ export class UsersController {
     return this.usersService.unVerifyUser(id);
   }
 
-  @Http.Put('/roles')
+  @Http.Put(':id/roles')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
-  public changeUserRoles(@Http.Body() body: UserRolesUpdateDto): Promise<void> {
-    const { email, roles } = body;
-    return this.usersService.updateRolesToUser(email, roles);
+  public changeUserRoles(
+    @Http.Param('id') userId: string,
+    @Http.Body() body: UserRolesUpdateDto,
+  ): Promise<void> {
+    const { roles } = body;
+    return this.usersService.updateRolesToUser(userId, roles);
   }
 
-  @Http.Put('/image/:id')
+  @Http.Put('/:id/image')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   @UseInterceptors(FileInterceptor('file'))
   public updateUserImage(
@@ -90,30 +92,9 @@ export class UsersController {
     });
   }
 
-  @Http.Delete(':id')
+  @Http.Delete('/:id')
   @Http.HttpCode(Http.HttpStatus.NO_CONTENT)
   public deleteUser(@Http.Param('id') id: string): Promise<void> {
     return this.usersService.deleteById(id);
-  }
-
-  @Http.Post('/onboarding/:id')
-  @Http.HttpCode(Http.HttpStatus.CREATED)
-  public saveDetail(
-    @Http.Param('id') id: string,
-    @Http.Body() preferences: UserRegisterCreateDto,
-  ): Promise<void> {
-    return this.usersService.saveDetail(id, preferences);
-  }
-
-  @Http.Get('/preferences/:id')
-  @Http.HttpCode(Http.HttpStatus.OK)
-  public async getAllUserPreferences(@Http.Param('id') userId: string) {
-    return this.usersService.getUserPreferences(userId);
-  }
-
-  @Http.Get('/:id')
-  @Http.HttpCode(Http.HttpStatus.OK)
-  public getUserById(@Http.Param('id') id: string): Promise<User> {
-    return this.usersService.getUserById(id);
   }
 }

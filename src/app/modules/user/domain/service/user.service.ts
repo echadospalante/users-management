@@ -11,27 +11,19 @@ import {
 import { AppRole, Pagination, User } from 'echadospalante-core';
 
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
-import UserRegisterCreateDto from '../../infrastructure/web/v1/model/request/user-preferences-create.dto';
 import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
-import { RolesRepository } from '../gateway/database/roles.repository';
-import { UserDetailRepository } from '../gateway/database/user-detail.repository';
-import { UserPreferencesRepository } from '../gateway/database/user-preferences.repository';
 import { UsersRepository } from '../gateway/database/users.repository';
+import { RolesService } from './role.service';
 
 @Injectable()
 export class UsersService {
   private readonly logger: Logger = new Logger(UsersService.name);
 
   public constructor(
+    private rolesService: RolesService,
     @Inject(UsersRepository)
     private usersRepository: UsersRepository,
-    @Inject(UserPreferencesRepository)
-    private userPreferencesRepository: UserPreferencesRepository,
-    @Inject(UserDetailRepository)
-    private userDetailRepository: UserDetailRepository,
-    @Inject(RolesRepository)
-    private rolesRepository: RolesRepository,
     @Inject(UserAMQPProducer)
     private userAMQPProducer: UserAMQPProducer,
   ) {}
@@ -74,7 +66,7 @@ export class UsersService {
   }
 
   private async buildUserToSave(user: UserCreateDto): Promise<User> {
-    const userRole = await this.rolesRepository.findByName(AppRole.USER);
+    const userRole = await this.rolesService.findByName(AppRole.USER);
     if (!userRole)
       return Promise.reject(new BadRequestException('Role not found'));
     return {
@@ -88,26 +80,6 @@ export class UsersService {
       roles: [userRole],
       preferences: [],
     };
-  }
-
-  public async saveDetail(
-    id: string,
-    detail: UserRegisterCreateDto,
-  ): Promise<void> {
-    const userDB = await this.usersRepository.findById(id);
-    if (!userDB) throw new NotFoundException('User not found');
-
-    return this.userDetailRepository
-      .updateDetail(id, detail)
-      .then(() => {
-        return this.userPreferencesRepository.updatePreferences(
-          id,
-          detail.preferencesIds,
-        );
-      })
-      .then(() => this.usersRepository.setOnboardingCompleted(id))
-      .then(() => this.userAMQPProducer.emitUserRegisteredEvent(userDB))
-      .then(() => this.logger.log(`User ${userDB.email} registered`));
   }
 
   public async enableUser(userId: string): Promise<User | null> {
@@ -187,6 +159,7 @@ export class UsersService {
     userId: string,
     image: { buffer: Buffer; mimetype: string },
   ): Promise<void> {
+    console.log({ userId, image });
     return Promise.resolve();
     // const usersCache = await this.usersCache.getMany('betting_house_*');
     // const user = usersCache.find(({ id }) => {
@@ -205,17 +178,6 @@ export class UsersService {
 
   public deleteById(email: string): Promise<void> {
     return this.usersRepository.deleteById(email);
-  }
-
-  public getUserPreferences(userId: string) {
-    return this.usersRepository.findById(userId).then((user) => {
-      if (!user) throw new NotFoundException('User not found');
-      return user.preferences;
-    });
-  }
-
-  public getRoles() {
-    return this.rolesRepository.findAll({});
   }
 
   public async updateRolesToUser(
@@ -241,5 +203,9 @@ export class UsersService {
     await this.usersRepository.removeUserRoles(email, removedRoles);
     this.logger.log(`Roles updated for user ${email}`);
     this.userAMQPProducer.emitUserUpdatedEvent(user);
+  }
+
+  public setOnboardingCompleted(userId: string) {
+    return this.usersRepository.setOnboardingCompleted(userId);
   }
 }
