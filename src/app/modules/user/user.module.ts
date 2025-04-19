@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   DepartmentData,
   EventCategoryData,
+  EventContactData,
   EventDonationData,
   EventLocationData,
   MunicipalityData,
@@ -114,6 +115,7 @@ import { UsersController } from './infrastructure/web/v1/users.controller';
       VentureSponsorshipData,
       VentureSubscriptionData,
       EventLocationData,
+      EventContactData,
       EventCategoryData,
       EventDonationData,
       MunicipalityData,
