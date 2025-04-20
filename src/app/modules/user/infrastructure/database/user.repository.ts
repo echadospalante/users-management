@@ -5,7 +5,6 @@ import { AppRole, Pagination, User } from 'echadospalante-core';
 import {
   RoleData,
   UserData,
-  UserDetailData,
 } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
@@ -19,14 +18,12 @@ export class UsersRepositoryImpl implements UsersRepository {
     private readonly userRepository: Repository<UserData>,
     @InjectRepository(RoleData)
     private readonly roleRepository: Repository<RoleData>,
-    @InjectRepository(UserDetailData)
-    private readonly userDetailRepository: Repository<UserDetailData>,
   ) {}
 
   public findByEmail(email: string): Promise<User | null> {
     return this.userRepository
       .findOne({ where: { email } })
-      .then((user) => user as User | null);
+      .then((user) => JSON.parse(JSON.stringify(user)) as User | null);
   }
 
   public countByCriteria(filters: UserFilters): Promise<number> {
@@ -75,7 +72,7 @@ export class UsersRepositoryImpl implements UsersRepository {
       query
         .getMany()
         // Fix this
-        .then((users) => users as User[])
+        .then((users) => JSON.parse(JSON.stringify(users)) as User[])
     );
   }
 
@@ -86,11 +83,13 @@ export class UsersRepositoryImpl implements UsersRepository {
   public findById(id: string): Promise<User | null> {
     return this.userRepository
       .findOne({ where: { id } })
-      .then((user) => user as User | null);
+      .then((user) => JSON.parse(JSON.stringify(user)) as User | null);
   }
 
   public save(user: User): Promise<User> {
-    return this.userRepository.save(user).then((user) => user as User);
+    return this.userRepository
+      .save(user)
+      .then((user) => JSON.parse(JSON.stringify(user)) as User);
   }
 
   public findAll(pagination?: Pagination): Promise<User[]> {
@@ -98,11 +97,15 @@ export class UsersRepositoryImpl implements UsersRepository {
       const { skip, take } = pagination;
       return this.userRepository
         .find({ skip, take })
-        .then((users) => users.map((user) => user as User));
+        .then((users) =>
+          users.map((user) => JSON.parse(JSON.stringify(user)) as User),
+        );
     }
     return this.userRepository
       .find()
-      .then((users) => users.map((user) => user as User));
+      .then((users) =>
+        users.map((user) => JSON.parse(JSON.stringify(user)) as User),
+      );
   }
 
   public async lockAccount(id: string): Promise<User> {
@@ -110,35 +113,45 @@ export class UsersRepositoryImpl implements UsersRepository {
     if (!user) throw new Error('Usuario no encontrado');
 
     user.active = false;
-    return this.userRepository.save(user).then((user) => user as User);
+    return this.userRepository
+      .save(user)
+      .then((user) => JSON.parse(JSON.stringify(user)) as User);
   }
 
   public async unlockAccount(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.active = true;
-    return this.userRepository.save(user).then((user) => user as User);
+    return this.userRepository
+      .save(user)
+      .then((user) => JSON.parse(JSON.stringify(user)) as User);
   }
 
   public async verifyAccount(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.verified = true;
-    return this.userRepository.save(user).then((user) => user as User);
+    return this.userRepository
+      .save(user)
+      .then((user) => JSON.parse(JSON.stringify(user)) as User);
   }
 
   public async unVerifyAccount(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.verified = false;
-    return this.userRepository.save(user).then((user) => user as User);
+    return this.userRepository
+      .save(user)
+      .then((user) => JSON.parse(JSON.stringify(user)) as User);
   }
 
   public async setOnboardingCompleted(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new Error('Usuario no encontrado');
     user.onboardingCompleted = true;
-    return this.userRepository.save(user).then((user) => user as User);
+    return this.userRepository
+      .save(user)
+      .then((user) => JSON.parse(JSON.stringify(user)) as User);
   }
 
   public addUserRoles(id: string, rolesToAdd: AppRole[]): Promise<User> {
@@ -150,7 +163,9 @@ export class UsersRepositoryImpl implements UsersRepository {
     ]).then(([user, roles]) => {
       if (!user) throw new Error('Usuario no encontrado');
       user.roles.push(...roles);
-      return this.userRepository.save(user).then((user) => user as User);
+      return this.userRepository
+        .save(user)
+        .then((user) => JSON.parse(JSON.stringify(user)) as User);
     });
   }
 
@@ -160,7 +175,9 @@ export class UsersRepositoryImpl implements UsersRepository {
       user.roles = user.roles.filter(
         (role) => !roles.some((r) => r === role.name),
       );
-      return this.userRepository.save(user).then((user) => user as User);
+      return this.userRepository
+        .save(user)
+        .then((user) => JSON.parse(JSON.stringify(user)) as User);
     });
   }
 }

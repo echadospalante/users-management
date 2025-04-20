@@ -79,6 +79,15 @@ export class UsersService {
       updatedAt: new Date(),
       roles: [userRole],
       preferences: [],
+      gender: 'M',
+      birthDate: new Date(),
+      comments: [],
+      donations: [],
+      notifications: [],
+      publicationClaps: [],
+      sponsorships: [],
+      subscriptions: [],
+      ventures: [],
     };
   }
 
