@@ -15,7 +15,7 @@ export class UsersContactController {
 
   @Http.Get('/:id/contact')
   @Http.HttpCode(Http.HttpStatus.OK)
-  public async getUserContactByEmail(@Http.Param('id') id: string) {
+  public async getUserContactById(@Http.Param('id') id: string) {
     const [items, total] = await Promise.all([
       this.usersContactService.getUserContact(id),
       0,

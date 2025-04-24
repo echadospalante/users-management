@@ -23,9 +23,11 @@ export class UsersController {
     return this.usersService.getUserById(id);
   }
 
-  @Http.Post()
+  @Http.Post('')
   @Http.HttpCode(Http.HttpStatus.CREATED)
-  public createUser(@Http.Body() userCreateDto: UserCreateDto): Promise<User> {
+  public registerUser(
+    @Http.Body() userCreateDto: UserCreateDto,
+  ): Promise<User> {
     this.logger.log('Creating user with email ' + userCreateDto.email);
     return this.usersService.saveUser(userCreateDto);
   }
@@ -41,35 +43,35 @@ export class UsersController {
     return { items, total };
   }
 
-  @Http.Put('/enable/:id')
+  @Http.Put('/:id/enable')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   public enableUser(@Http.Param('id') id: string): Promise<User | null> {
     this.logger.log('Enabling user with id ' + id);
     return this.usersService.enableUser(id);
   }
 
-  @Http.Put('/disable/:id')
+  @Http.Put('/:id/disable')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   public disableUser(@Http.Param('id') id: string): Promise<User | null> {
     this.logger.log('Disabling user with id ' + id);
     return this.usersService.disableUser(id);
   }
 
-  @Http.Put('/verify/:id')
+  @Http.Put('/:id/verify')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   public verifyUser(@Http.Param('id') id: string): Promise<User | null> {
     this.logger.log('Verifying user with id ' + id);
     return this.usersService.verifyUser(id);
   }
 
-  @Http.Put('/un-verify/:id')
+  @Http.Put('/:id/un-verify')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   public unVerifyUser(@Http.Param('id') id: string): Promise<User | null> {
     this.logger.log('Undoing verification user with id ' + id);
     return this.usersService.unVerifyUser(id);
   }
 
-  @Http.Put(':id/roles')
+  @Http.Put('/:id/roles')
   @Http.HttpCode(Http.HttpStatus.ACCEPTED)
   public changeUserRoles(
     @Http.Param('id') userId: string,

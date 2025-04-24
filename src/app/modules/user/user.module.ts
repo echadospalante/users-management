@@ -43,14 +43,12 @@ import { RolesRepositoryImpl } from './infrastructure/database/role.repository';
 import { UserContactRepositoryImpl } from './infrastructure/database/user-contact.repository';
 import { UserPreferencesRepositoryImpl } from './infrastructure/database/user-preferences.repository';
 import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
-import { RolesController } from './infrastructure/web/v1/roles.controller';
 import { UsersContactController } from './infrastructure/web/v1/user-contact.controller';
 import { UserPreferencesController } from './infrastructure/web/v1/user-preferences.controller';
 import { UsersController } from './infrastructure/web/v1/users.controller';
 
 @Module({
   controllers: [
-    RolesController,
     UsersContactController,
     UserPreferencesController,
     UsersController,
