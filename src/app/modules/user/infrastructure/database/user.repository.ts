@@ -3,11 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { AppRole, Pagination, User } from 'echadospalante-core';
 import {
+  MunicipalityData,
   RoleData,
   UserData,
+  VentureCategoryData,
 } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
+import { OnboardingInfo } from '../../domain/core/onboarding';
 import { UserFilters } from '../../domain/core/user-filters';
 import { UsersRepository } from '../../domain/gateway/database/users.repository';
 
@@ -18,6 +21,8 @@ export class UsersRepositoryImpl implements UsersRepository {
     private readonly userRepository: Repository<UserData>,
     @InjectRepository(RoleData)
     private readonly roleRepository: Repository<RoleData>,
+    @InjectRepository(VentureCategoryData)
+    private readonly ventureCateogoryData: Repository<RoleData>,
   ) {}
 
   public findByEmail(email: string): Promise<User | null> {
@@ -179,5 +184,24 @@ export class UsersRepositoryImpl implements UsersRepository {
         .save(user)
         .then((user) => JSON.parse(JSON.stringify(user)) as User);
     });
+  }
+
+  public async saveOnboarding(
+    email: string,
+    onboardingInfo: OnboardingInfo,
+  ): Promise<void> {
+    const { gender, birthDate, municipalityId, preferences } = onboardingInfo;
+
+    const user = await this.userRepository.findOneBy({
+      email,
+    });
+    if (!user) throw new Error('Usuario no encontrado');
+
+    user.birthDate = birthDate;
+    user.gender = gender;
+    user.municipality = { id: municipalityId } as MunicipalityData;
+    user.preferences = preferences.map((id) => ({ id }) as VentureCategoryData);
+    user.onboardingCompleted = true;
+    await this.userRepository.save(user);
   }
 }

@@ -15,6 +15,10 @@ import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { UsersRepository } from '../gateway/database/users.repository';
 import { RolesService } from './role.service';
+import { OnboardingInfo } from '../core/onboarding';
+import { Request } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 
 @Injectable()
 export class UsersService {
@@ -214,7 +218,23 @@ export class UsersService {
     this.userAMQPProducer.emitUserUpdatedEvent(user);
   }
 
-  public setOnboardingCompleted(userId: string) {
-    return this.usersRepository.setOnboardingCompleted(userId);
+  public async saveOnboarding(email: string, onboardingInfo: OnboardingInfo) {
+    // return this.usersRepository.setOnboardingCompleted(userId);
+    const user = await this.usersRepository.findByEmail(email);
+    if (!user) throw new NotFoundException('User not found');
+    if (!user.active) throw new ForbiddenException('User is disabled');
+
+    if (user.onboardingCompleted)
+      throw new UnprocessableEntityException(
+        'User already completed onboarding',
+      );
+    this.usersRepository.saveOnboarding(email, onboardingInfo);
+  }
+
+  public async refreshAuth(email: string) {
+    const user = await this.usersRepository.findByEmail(email);
+    if (!user) throw new NotFoundException('User not found');
+    if (!user.active) throw new ForbiddenException('User is disabled');
+    return user;
   }
 }

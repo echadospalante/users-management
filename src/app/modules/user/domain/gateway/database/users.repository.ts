@@ -1,8 +1,10 @@
 import { AppRole, Pagination, User } from 'echadospalante-core';
 
 import { UserFilters } from '../../core/user-filters';
+import { OnboardingInfo } from '../../core/onboarding';
 
 export interface UsersRepository {
+  saveOnboarding(email: string, onboardingInfo: OnboardingInfo): Promise<void>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
   countByCriteria(filters: UserFilters): Promise<number>;

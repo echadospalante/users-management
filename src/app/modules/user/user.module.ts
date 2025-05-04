@@ -46,12 +46,14 @@ import { UsersRepositoryImpl } from './infrastructure/database/user.repository';
 import { UsersContactController } from './infrastructure/web/v1/user-contact.controller';
 import { UserPreferencesController } from './infrastructure/web/v1/user-preferences.controller';
 import { UsersController } from './infrastructure/web/v1/users.controller';
+import { AuthController } from './infrastructure/web/v1/auth.controller';
 
 @Module({
   controllers: [
     UsersContactController,
     UserPreferencesController,
     UsersController,
+    AuthController,
   ],
   providers: [
     RolesService,
