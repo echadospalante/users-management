@@ -1,4 +1,4 @@
-import { VentureCategory } from 'echadospalante-core';
+import { VentureCategory } from 'echadospalante-domain';
 
 export interface UserPreferencesRepository {
   findByUserId(userId: string): Promise<VentureCategory[]>;

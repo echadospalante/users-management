@@ -1,5 +1,5 @@
 import * as Validate from 'class-validator';
-import { AppRole } from 'echadospalante-core';
+import { AppRole } from 'echadospalante-domain';
 
 export default class UserRolesUpdateDto {
   @Validate.IsArray()

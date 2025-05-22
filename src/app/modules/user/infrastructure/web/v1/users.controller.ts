@@ -2,7 +2,7 @@ import * as Http from '@nestjs/common';
 import { Logger, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { User } from 'echadospalante-core';
+import { User } from 'echadospalante-domain';
 
 import { UsersService } from '../../../domain/service/user.service';
 import UserCreateDto from './model/request/user-create.dto';
@@ -17,10 +17,16 @@ export class UsersController {
 
   public constructor(private readonly usersService: UsersService) {}
 
-  @Http.Get('/:id')
+  @Http.Get('/id/:id')
   @Http.HttpCode(Http.HttpStatus.OK)
   public getUserById(@Http.Param('id') id: string): Promise<User> {
     return this.usersService.getUserById(id);
+  }
+
+  @Http.Get('/email/:email')
+  @Http.HttpCode(Http.HttpStatus.OK)
+  public getUserByEmail(@Http.Param('email') email: string): Promise<User> {
+    return this.usersService.getUserByEmail(email);
   }
 
   @Http.Post('')
@@ -35,6 +41,8 @@ export class UsersController {
   @Http.Get('')
   @Http.HttpCode(Http.HttpStatus.OK)
   public async getAllUsers(@Http.Query() query: UsersQueryDto) {
+    console.log('Query', query);
+
     const { pagination, filters } = UsersQueryDto.parseQuery(query);
     const [items, total] = await Promise.all([
       this.usersService.getUsers(filters, pagination),

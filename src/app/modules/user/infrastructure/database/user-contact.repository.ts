@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { UserContact } from 'echadospalante-core';
-import { UserContactData } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
+import { UserContact } from 'echadospalante-domain';
+import { UserContactData } from 'echadospalante-domain/dist/app/modules/infrastructure/database/entities';
 import { Repository } from 'typeorm';
 
 import { UserContactRepository } from '../../domain/gateway/database/user-contact.repository';

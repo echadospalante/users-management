@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { AppRole, Role } from 'echadospalante-core';
-import { RoleData } from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
+import { AppRole, Role } from 'echadospalante-domain';
+import { RoleData } from 'echadospalante-domain/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
 import { RolesRepository } from '../../domain/gateway/database/roles.repository';

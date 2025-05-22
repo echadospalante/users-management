@@ -1,4 +1,4 @@
-import { User } from 'echadospalante-core';
+import { User } from 'echadospalante-domain';
 
 export interface UserAMQPProducer {
   emitUserCreatedEvent(user: User): Promise<boolean>;

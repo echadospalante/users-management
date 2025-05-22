@@ -8,7 +8,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 
-import { AppRole, Pagination, User } from 'echadospalante-core';
+import { AppRole, Pagination, User } from 'echadospalante-domain';
 
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
 import { UserFilters } from '../core/user-filters';
@@ -41,6 +41,12 @@ export class UsersService {
 
   public async getUserById(userId: string): Promise<User> {
     const user = await this.usersRepository.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  public async getUserByEmail(email: string): Promise<User> {
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) throw new NotFoundException('User not found');
     return user;
   }

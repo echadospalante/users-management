@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { Connection, connect } from 'amqplib';
+import { ChannelModel, connect } from 'amqplib';
 
 @Injectable()
 export class RabbitMQConfig {
-  private _client: Promise<Connection>;
+  private _client: Promise<ChannelModel>;
   private readonly logger: Logger = new Logger(RabbitMQConfig.name);
 
   public constructor(private configService: ConfigService) {

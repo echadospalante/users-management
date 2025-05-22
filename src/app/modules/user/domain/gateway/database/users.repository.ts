@@ -1,4 +1,4 @@
-import { AppRole, Pagination, User } from 'echadospalante-core';
+import { AppRole, Pagination, User } from 'echadospalante-domain';
 
 import { UserFilters } from '../../core/user-filters';
 import { OnboardingInfo } from '../../core/onboarding';

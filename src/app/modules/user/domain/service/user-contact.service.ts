@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
-import { UserContact } from 'echadospalante-core';
+import { UserContact } from 'echadospalante-domain';
 
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { UserContactRepository } from '../gateway/database/user-contact.repository';

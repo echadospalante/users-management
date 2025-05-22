@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 
-import { AppRole, Role } from 'echadospalante-core';
+import { AppRole, Role } from 'echadospalante-domain';
 
 import { RolesRepository } from '../gateway/database/roles.repository';
 

@@ -1,4 +1,4 @@
-import { AppRole, Role } from 'echadospalante-core';
+import { AppRole, Role } from 'echadospalante-domain';
 
 export interface RolesRepository {
   findManyByName(roles: AppRole[]): Promise<Role[]>;

@@ -25,7 +25,7 @@ import {
   VenturePublicationData,
   VentureSponsorshipData,
   VentureSubscriptionData,
-} from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
+} from 'echadospalante-domain/dist/app/modules/infrastructure/database/entities';
 
 import { RabbitMQConfig } from '../../config/rabbitmq/amqp.connection';
 import { CreateUserInterceptor } from './application/interceptors/create-user.interceptor';

@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import * as Validate from 'class-validator';
-import { AppRole, Pagination } from 'echadospalante-core';
+import { AppRole, Pagination } from 'echadospalante-domain';
 
 import { UserFilters } from '../../../../../domain/core/user-filters';
 

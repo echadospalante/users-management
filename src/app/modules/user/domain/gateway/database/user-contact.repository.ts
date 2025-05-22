@@ -1,4 +1,4 @@
-import { UserContact } from 'echadospalante-core';
+import { UserContact } from 'echadospalante-domain';
 
 export interface UserContactRepository {
   findByUserId(userId: string): Promise<UserContact | null>;

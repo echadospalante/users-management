@@ -1,4 +1,4 @@
-import { AppRole } from 'echadospalante-core';
+import { AppRole } from 'echadospalante-domain';
 
 export interface UserFilters {
   search?: string;

@@ -1,7 +1,7 @@
 import * as Http from '@nestjs/common';
 import { Logger } from '@nestjs/common';
 
-import { User } from 'echadospalante-core';
+import { User } from 'echadospalante-domain';
 
 import { UsersService } from '../../../domain/service/user.service';
 import UserCreateDto from './model/request/user-create.dto';

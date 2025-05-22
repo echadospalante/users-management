@@ -4,10 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   UserData,
   VentureCategoryData,
-} from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
+} from 'echadospalante-domain/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
-import { VentureCategory } from 'echadospalante-core';
+import { VentureCategory } from 'echadospalante-domain';
 import { UserPreferencesRepository } from '../../domain/gateway/database/user-preferences.repository';
 
 @Injectable()

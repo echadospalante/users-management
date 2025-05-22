@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { AppRole, Pagination, User } from 'echadospalante-core';
+import { AppRole, Pagination, User } from 'echadospalante-domain';
 import {
   MunicipalityData,
   RoleData,
   UserData,
   VentureCategoryData,
-} from 'echadospalante-core/dist/app/modules/infrastructure/database/entities';
+} from 'echadospalante-domain/dist/app/modules/infrastructure/database/entities';
 import { In, Repository } from 'typeorm';
 
 import { OnboardingInfo } from '../../domain/core/onboarding';
