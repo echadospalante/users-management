@@ -73,12 +73,13 @@ export class UsersRepositoryImpl implements UsersRepository {
       query.skip(pagination.skip).take(pagination.take);
     }
     // console.log({ sql: query.getSql(), params: query.getParameters() });
-    return (
-      query
-        .getMany()
-        // Fix this
-        .then((users) => JSON.parse(JSON.stringify(users)) as User[])
-    );
+
+    query.leftJoinAndSelect('user.roles', 'roles');
+    query.leftJoinAndSelect('user.municipality', 'municipality');
+
+    return query
+      .getMany()
+      .then((users) => JSON.parse(JSON.stringify(users)) as User[]);
   }
 
   public deleteById(id: string): Promise<void> {

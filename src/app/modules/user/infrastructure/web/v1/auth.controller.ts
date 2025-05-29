@@ -3,10 +3,9 @@ import { Logger } from '@nestjs/common';
 
 import { User } from 'echadospalante-domain';
 
+import { OnboardingInfo } from '../../../domain/core/onboarding';
 import { UsersService } from '../../../domain/service/user.service';
 import UserCreateDto from './model/request/user-create.dto';
-import { OnboardingInfo } from '../../../domain/core/onboarding';
-import { Request } from 'express';
 
 const path = '/auth';
 
@@ -38,5 +37,11 @@ export class AuthController {
   @Http.HttpCode(Http.HttpStatus.OK)
   public refreshAuth(@Http.Headers('X-Requested-By') userEmail: string) {
     return this.usersService.refreshAuth(userEmail);
+  }
+
+  @Http.Get('/roles')
+  @Http.HttpCode(Http.HttpStatus.OK)
+  public getAllRoles() {
+    return this.usersService.getAllRoles();
   }
 }

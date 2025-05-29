@@ -11,14 +11,11 @@ import {
 import { AppRole, Pagination, User } from 'echadospalante-domain';
 
 import UserCreateDto from '../../infrastructure/web/v1/model/request/user-create.dto';
+import { OnboardingInfo } from '../core/onboarding';
 import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { UsersRepository } from '../gateway/database/users.repository';
 import { RolesService } from './role.service';
-import { OnboardingInfo } from '../core/onboarding';
-import { Request } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
 
 @Injectable()
 export class UsersService {
@@ -242,5 +239,9 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     if (!user.active) throw new ForbiddenException('User is disabled');
     return user;
+  }
+
+  public getAllRoles() {
+    return this.rolesService.getRoles();
   }
 }
