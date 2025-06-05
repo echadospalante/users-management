@@ -84,6 +84,7 @@ import { AuthController } from './infrastructure/web/v1/auth.controller';
       useClass: UserAMQPProducerImpl,
     },
   ],
+  exports: [UsersService],
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([

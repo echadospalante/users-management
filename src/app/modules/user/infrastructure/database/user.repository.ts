@@ -205,4 +205,15 @@ export class UsersRepositoryImpl implements UsersRepository {
     user.onboardingCompleted = true;
     await this.userRepository.save(user);
   }
+
+  public getRandomUser(): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.municipality', 'municipality')
+      .orderBy('RANDOM()')
+      .limit(1)
+      .getOne()
+      .then((user) => JSON.parse(JSON.stringify(user)) as User | null);
+  }
 }

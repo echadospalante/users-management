@@ -4,6 +4,7 @@ import { UserFilters } from '../../core/user-filters';
 import { OnboardingInfo } from '../../core/onboarding';
 
 export interface UsersRepository {
+  getRandomUser(): Promise<User | null>;
   saveOnboarding(email: string, onboardingInfo: OnboardingInfo): Promise<void>;
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;

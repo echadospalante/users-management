@@ -244,4 +244,8 @@ export class UsersService {
   public getAllRoles() {
     return this.rolesService.getRoles();
   }
+
+  public getRandomUser() {
+    return this.usersRepository.getRandomUser();
+  }
 }

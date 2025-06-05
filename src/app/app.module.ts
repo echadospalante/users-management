@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { environment, JoiValidationSchema } from '../env/joi.config';
 import { RabbitMQConfig } from './config/rabbitmq/amqp.connection';
+import { SharedModule } from './modules/shared/shared.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -16,6 +17,7 @@ import { UserModule } from './modules/user/user.module';
       validationSchema: JoiValidationSchema,
     }),
     UserModule,
+    SharedModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
