@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { AppRole, Pagination, User } from 'echadospalante-domain';
 import {
+  DepartmentData,
   MunicipalityData,
   RoleData,
   UserData,
@@ -21,14 +22,15 @@ export class UsersRepositoryImpl implements UsersRepository {
     private readonly userRepository: Repository<UserData>,
     @InjectRepository(RoleData)
     private readonly roleRepository: Repository<RoleData>,
-    @InjectRepository(VentureCategoryData)
-    private readonly ventureCateogoryData: Repository<RoleData>,
   ) {}
 
   public findByEmail(email: string): Promise<User | null> {
     return this.userRepository
-      .findOne({ where: { email } })
-      .then((user) => JSON.parse(JSON.stringify(user)) as User | null);
+      .findOne({
+        where: { email },
+        relations: ['contact', 'preferences', 'roles', 'municipality'],
+      })
+      .then((user) => user as User | null);
   }
 
   public countByCriteria(filters: UserFilters): Promise<number> {

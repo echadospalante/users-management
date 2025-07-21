@@ -17,6 +17,15 @@ export class UsersController {
 
   public constructor(private readonly usersService: UsersService) {}
 
+  @Http.Get('/usage/statistics')
+  @Http.HttpCode(Http.HttpStatus.OK)
+  public getUserOwnedUsageStatistics(
+    @Http.Headers('X-Requested-By') userEmail: string,
+  ) {
+    console.log({ userEmail });
+    return this.usersService.getUserOwnedUsageStatistics(userEmail);
+  }
+
   @Http.Get('/id/:id')
   @Http.HttpCode(Http.HttpStatus.OK)
   public getUserById(@Http.Param('id') id: string): Promise<User> {

@@ -15,6 +15,7 @@ import { OnboardingInfo } from '../core/onboarding';
 import { UserFilters } from '../core/user-filters';
 import { UserAMQPProducer } from '../gateway/amqp/user.amqp';
 import { UsersRepository } from '../gateway/database/users.repository';
+import { VenturesHttpClient } from '../gateway/http/ventures.gateway';
 import { RolesService } from './role.service';
 
 @Injectable()
@@ -27,6 +28,8 @@ export class UsersService {
     private usersRepository: UsersRepository,
     @Inject(UserAMQPProducer)
     private userAMQPProducer: UserAMQPProducer,
+    @Inject(VenturesHttpClient)
+    private venturesHttpClient: VenturesHttpClient,
   ) {}
 
   public getUsers(
@@ -231,7 +234,11 @@ export class UsersService {
       throw new UnprocessableEntityException(
         'User already completed onboarding',
       );
-    this.usersRepository.saveOnboarding(email, onboardingInfo);
+    return this.usersRepository
+      .saveOnboarding(email, onboardingInfo)
+      .then(() => {
+        this.userAMQPProducer.emitUserRegisteredEvent(user);
+      });
   }
 
   public async refreshAuth(email: string) {
@@ -247,5 +254,49 @@ export class UsersService {
 
   public getRandomUser() {
     return this.usersRepository.getRandomUser();
+  }
+
+  public async getUserOwnedUsageStatistics(userEmail: string) {
+    const [
+      venturesCount,
+      publicationsCount,
+      eventsCount,
+      subscriptionsCount,
+      generalSubscribersCount,
+      donationsGivenCount,
+      donationsReceivedCount,
+      sponsorshipsGivenCount,
+      sponsorshipsReceivedCount,
+      commentsCount,
+      clapsCount,
+    ] = await Promise.all([
+      this.venturesHttpClient.getVenturesCountByUserEmail(userEmail),
+      this.venturesHttpClient.getPublicationsCountByUserEmail(userEmail),
+      this.venturesHttpClient.getEventsCountByUserEmail(userEmail),
+      this.venturesHttpClient.getSubscriptionsCountByUserEmail(userEmail),
+      this.venturesHttpClient.getGeneralSubscribersCountByUserEmail(userEmail),
+      this.venturesHttpClient.getDonationsGivenCountByUserEmail(userEmail),
+      this.venturesHttpClient.getDonationsReceivedCountByUserEmail(userEmail),
+      this.venturesHttpClient.getSponsorshipsGivenCountByUserEmail(userEmail),
+      this.venturesHttpClient.getSponsorshipsReceivedCountByUserEmail(
+        userEmail,
+      ),
+      this.venturesHttpClient.getCommentsCountByUserEmail(userEmail),
+      this.venturesHttpClient.getClapsCountByUserEmail(userEmail),
+    ]);
+
+    return {
+      venturesCount,
+      publicationsCount,
+      eventsCount,
+      subscriptionsCount,
+      generalSubscribersCount,
+      donationsGivenCount,
+      donationsReceivedCount,
+      sponsorshipsGivenCount,
+      sponsorshipsReceivedCount,
+      commentsCount,
+      clapsCount,
+    };
   }
 }

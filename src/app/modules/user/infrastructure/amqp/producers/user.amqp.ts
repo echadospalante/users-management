@@ -137,7 +137,7 @@ export class UserAMQPProducerImpl implements UserAMQPProducer {
             exclusive: false,
           })
           .then(({ queue }) => {
-            this.logger.log(`Created queue ${queue}`);
+            this.logger.log(`Asserted queue ${queue}`);
             return channel;
           }),
       ),
