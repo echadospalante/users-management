@@ -64,6 +64,48 @@ export class VenturesHttpAdapter implements VenturesHttpClient {
       .then((response) => response.result);
   }
 
+  public getSponsorshipsGivenCountByUserEmail(email: string): Promise<number> {
+    return this.httpService
+      .get<{
+        result: number;
+      }>(
+        `${this.BASE_VENTURES_URL}/api/v1/ventures/_/sponsorships/stats/given-count-by-user/${email}`,
+      )
+      .then((response) => response.result);
+  }
+
+  public getSponsorshipsReceivedCountByUserEmail(
+    email: string,
+  ): Promise<number> {
+    return this.httpService
+      .get<{
+        result: number;
+      }>(
+        `${this.BASE_VENTURES_URL}/api/v1/ventures/_/sponsorships/stats/received-count-by-user/${email}`,
+      )
+      .then((response) => response.result);
+  }
+
+  public getDonationsGivenCountByUserEmail(email: string): Promise<number> {
+    return this.httpService
+      .get<{
+        result: number;
+      }>(
+        `${this.BASE_VENTURES_URL}/api/v1/events/_/donations/stats/given-count-by-user/${email}`,
+      )
+      .then((response) => response.result);
+  }
+
+  public getDonationsReceivedCountByUserEmail(email: string): Promise<number> {
+    return this.httpService
+      .get<{
+        result: number;
+      }>(
+        `${this.BASE_VENTURES_URL}/api/v1/events/_/donations/stats/received-count-by-user/${email}`,
+      )
+      .then((response) => response.result);
+  }
+
   public getCommentsCountByUserEmail(email: string): Promise<number> {
     return this.httpService
       .get<{
@@ -82,51 +124,5 @@ export class VenturesHttpAdapter implements VenturesHttpClient {
         `${this.BASE_VENTURES_URL}/api/v1/publications/_/stats/claps-count-by-user/${email}`,
       )
       .then((response) => response.result);
-  }
-
-  public getDonationsGivenCountByUserEmail(email: string): Promise<number> {
-    return Promise.resolve(-1);
-    // return this.httpService
-    //   .get<{
-    //     result: number;
-    //   }>(
-    //     `${this.BASE_VENTURES_URL}/api/v1/donations/stats/given-count-by-user/${email}`,
-    //   )
-    //   .then((response) => response.result);
-  }
-
-  public getDonationsReceivedCountByUserEmail(email: string): Promise<number> {
-    return Promise.resolve(-1);
-    // return this.httpService
-    //   .get<{
-    //     result: number;
-    //   }>(
-    //     `${this.BASE_VENTURES_URL}/api/v1/donations/stats/received-count-by-user/${email}`,
-    //   )
-    //   .then((response) => response.result);
-  }
-
-  public getSponsorshipsGivenCountByUserEmail(email: string): Promise<number> {
-    return Promise.resolve(-1);
-    // return this.httpService
-    //   .get<{
-    //     result: number;
-    //   }>(
-    //     `${this.BASE_VENTURES_URL}/api/v1/sponsorships/stats/given-count-by-user/${email}`,
-    //   )
-    //   .then((response) => response.result);
-  }
-
-  public getSponsorshipsReceivedCountByUserEmail(
-    email: string,
-  ): Promise<number> {
-    return Promise.resolve(-1);
-    // return this.httpService
-    //   .get<{
-    //     result: number;
-    //   }>(
-    //     `${this.BASE_VENTURES_URL}/api/v1/sponsorships/stats/received-count-by-user/${email}`,
-    //   )
-    //   .then((response) => response.result);
   }
 }
